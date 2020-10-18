@@ -1,0 +1,17 @@
+#+title: Manual Upload Script for Pinguino boards
+
+* Description
+
+This repositories contains a minimal pinguino upload script for those
+who at one time used the [[http://pinguino.cc][Pinguino]] ide and now just want to upload code
+to PICs flashed with the pinguino bootloader, without needing to load
+the whole hog.
+
+It started life as a script I found in the pinguino sources itself,
+but which since seems to have been deleted.  It underwent minor
+modifications to work with python3, whose usb support is clearly
+slightly different from that which was in place back when it was first
+written.
+
+I have used it with Pic18F2550/4550 devices.  With anything else it is
+untested.
