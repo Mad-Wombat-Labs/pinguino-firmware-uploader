@@ -6,7 +6,8 @@ Basic gui for uploader script.
 Written so I can give people something they might be able to cope with!
 """
 
-from tkinter import Button, OptionMenu, StringVar, Tk
+import tkinter.ttk as ttk
+from tkinter import Button, StringVar, Tk
 from tkinter.filedialog import askopenfile
 
 import boards
@@ -42,10 +43,8 @@ if __name__ == "__main__":
     selected_board = StringVar()
     selected_board.set("Pinguino 4550")
     board_list = {board.name: board for board in boards.boardlist}
-    print(board_list)
-    print(selected_board.get())
 
-    board_menu = OptionMenu(root, selected_board, *board_list.keys())
+    board_menu = ttk.OptionMenu(root, selected_board, *board_list.keys())
     board_menu.pack()
 
     load_button = Button(root, text="Load firmware", command=load_firmware)
