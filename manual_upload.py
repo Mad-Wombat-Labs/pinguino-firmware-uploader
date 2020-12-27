@@ -5,13 +5,6 @@ from os import path
 import boards
 import uploader.uploader
 
-parser = ArgumentParser()
-parser.add_argument("BOARD", help="Name of board, see boards.py for list.")
-parser.add_argument("HEXFILE", help="Path to hexfile to upload.")
-args = parser.parse_args()
-
-hexfile = path.expanduser(args.HEXFILE)
-
 board = {
     "Amicus18": boards.Amicus18,
     "CHRP3": boards.CHRP3,
@@ -51,10 +44,25 @@ board = {
     "UBW32_795": boards.UBW32_795,
 }
 
-up = uploader.uploader.Uploader()
-up.configure_uploader(hexfile, board[args.BOARD.strip()])
-status = up.upload_hex()
-if "successfully uploaded" in " ".join(status):
-    print("Successfully uploaded!")
-else:
-    raise Exception(" ".join(status))
+
+def upload_firmware(hexfile, board):
+    """Upload hexfile to given board, raising exception if it fails."""
+    up = uploader.uploader.Uploader()
+    up.configure_uploader(hexfile, board)
+    status = up.upload_hex()
+    if "successfully uploaded" in " ".join(status):
+        return "Successfully uploaded!"
+    else:
+        raise Exception(" ".join(status))
+
+
+if __name__ == "__main__":
+
+    parser = ArgumentParser()
+    parser.add_argument("BOARD", help="Name of board, see boards.py for list.")
+    parser.add_argument("HEXFILE", help="Path to hexfile to upload.")
+    args = parser.parse_args()
+
+    hexfile = path.expanduser(args.HEXFILE)
+    selected_board = board[args.BOARD.strip()]
+    print(upload_firmware(hexfile, selected_board))
