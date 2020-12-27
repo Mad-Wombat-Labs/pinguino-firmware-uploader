@@ -53,5 +53,8 @@ board = {
 
 up = uploader.uploader.Uploader()
 up.configure_uploader(hexfile, board[args.BOARD.strip()])
-up.upload_hex()
-print("Successfully uploaded!")
+status = up.upload_hex()
+if "successfully uploaded" in " ".join(status):
+    print("Successfully uploaded!")
+else:
+    raise Exception(" ".join(status))
