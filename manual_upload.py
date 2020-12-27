@@ -45,6 +45,10 @@ board = {
 }
 
 
+class UploaderException(Exception):
+    pass
+
+
 def upload_firmware(hexfile, board):
     """Upload hexfile to given board, raising exception if it fails."""
     up = uploader.uploader.Uploader()
@@ -53,7 +57,7 @@ def upload_firmware(hexfile, board):
     if "successfully uploaded" in " ".join(status):
         return "Successfully uploaded!"
     else:
-        raise Exception(" ".join(status))
+        raise UploaderException(" ".join(status))
 
 
 if __name__ == "__main__":
