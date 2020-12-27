@@ -1,8 +1,9 @@
 #!/usr/bin/python3
-import uploader.uploader
-import boards
 from argparse import ArgumentParser
 from os import path
+
+import boards
+import uploader.uploader
 
 parser = ArgumentParser()
 parser.add_argument("BOARD", help="Name of board, see boards.py for list.")
@@ -47,7 +48,7 @@ board = {
     "Pinguino47J53A": boards.Pinguino47J53A,
     "Pinguino47J53B": boards.Pinguino47J53B,
     "UBW32_460": boards.UBW32_460,
-    "UBW32_795": boards.UBW32_795
+    "UBW32_795": boards.UBW32_795,
 }
 
 up = uploader.uploader.Uploader()
