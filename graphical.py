@@ -11,6 +11,7 @@ from tkinter import Button, StringVar, Tk
 from tkinter.filedialog import askopenfile
 
 import boards
+import manual_upload
 
 hexfile = None
 board = None
@@ -33,7 +34,10 @@ def upload_firmware():
 
     up = uploader.uploader.Uploader()
     up.configure_uploader(hexfile, board)
-    up.upload_hex()
+    try:
+        manual_upload.upload_firmware(hexfile, board)
+    except manual_upload.UploaderException as e:
+        print("Error!")  # should have popup box here
 
 
 if __name__ == "__main__":
