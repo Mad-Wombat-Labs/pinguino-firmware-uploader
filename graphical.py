@@ -8,6 +8,7 @@ Written so I can give people something they might be able to cope with!
 
 from tkinter import Button, StringVar, Tk
 from tkinter.filedialog import askopenfile
+from tkinter.ttk import Button, OptionMenu
 
 import boards
 import manual_upload
@@ -44,10 +45,9 @@ if __name__ == "__main__":
     root.title("Firmware Updater")
 
     selected_board = StringVar()
-    selected_board.set("Pinguino 4550")
     board_list = {board.name: board for board in boards.boardlist}
 
-    board_menu = OptionMenu(root, selected_board, *board_list.keys())
+    board_menu = OptionMenu(root, selected_board, "Pinguingo 4550", *board_list.keys())
     board_menu.pack()
 
     load_button = Button(root, text="Load firmware", command=load_firmware)
