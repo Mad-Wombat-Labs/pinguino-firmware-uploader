@@ -42,6 +42,12 @@ import logging
 import os
 #import debugger
 
+
+class UploaderError(Exception):
+    pass
+
+
+
 # from .. import Debugger
 
 ########################################################################
