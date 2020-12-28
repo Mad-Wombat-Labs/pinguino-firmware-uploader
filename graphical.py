@@ -12,6 +12,7 @@ from tkinter.filedialog import askopenfile
 from tkinter.ttk import Button, Label, OptionMenu, Progressbar
 
 import boards
+import uploader.uploader
 
 hexfile = None
 board = None
@@ -59,7 +60,6 @@ def popup_notification(msg, title):
 def upload_firmware():
     """Upload firmware to device."""
     global hexfile, selected_board, upload_process, progress_bar, popup, upload_timeout
-    import uploader.uploader
 
     upload_timeout = False
 
