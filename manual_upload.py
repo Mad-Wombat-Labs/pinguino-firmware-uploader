@@ -61,7 +61,7 @@ def upload_firmware(hexfile, board):
 
 
 if __name__ == "__main__":
-
+    multiprocessing.freeze_support()
     parser = ArgumentParser()
     parser.add_argument("BOARD", help="Name of board, see boards.py for list.")
     parser.add_argument("HEXFILE", help="Path to hexfile to upload.")
