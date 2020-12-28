@@ -224,11 +224,11 @@ class Uploader(object):
 
         self.uploader = Uploader()
 
-
     # ------------------------------------------------------------------
     # @Debugger.debug_method
     def upload_hex(self):
         self.uploader.report = []
         # self.uploader.writeHex()
         self.uploader.uploadDevice(self.hex_file, self.board)
-        return self.uploader.report
+        if "successfully uploaded" not in " ".join(self.uploader.report):
+            raise UploaderError("\n".join(self.uploader.report))
