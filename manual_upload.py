@@ -4,6 +4,7 @@ from os import path
 
 import boards
 import uploader.uploader
+from uploader.uploader import UploaderError
 
 board = {
     "Amicus18": boards.Amicus18,
@@ -45,19 +46,18 @@ board = {
 }
 
 
-class UploaderException(Exception):
-    pass
-
-
 def upload_firmware(hexfile, board):
     """Upload hexfile to given board, raising exception if it fails."""
     up = uploader.uploader.Uploader()
     up.configure_uploader(hexfile, board)
-    status = up.upload_hex()
-    if "successfully uploaded" in " ".join(status):
-        return "Successfully uploaded!"
-    else:
-        raise UploaderException(" ".join(status))
+    from multiprocessing import Process
+
+    t = Process(target=up.upload_hex)
+    t.start()
+    t.join(3)
+    if t.is_alive():
+        t.terminate()
+        raise UploaderError("Upload timed out")
 
 
 if __name__ == "__main__":
@@ -69,4 +69,4 @@ if __name__ == "__main__":
 
     hexfile = path.expanduser(args.HEXFILE)
     selected_board = board[args.BOARD.strip()]
-    print(upload_firmware(hexfile, selected_board))
+    upload_firmware(hexfile, selected_board)
