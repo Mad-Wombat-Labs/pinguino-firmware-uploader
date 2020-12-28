@@ -10,7 +10,7 @@ from multiprocessing import Process
 from tkinter import StringVar, Tk
 from tkinter.filedialog import askopenfile
 from tkinter.ttk import Button, Label, OptionMenu, Progressbar
-
+import multiprocessing
 import boards
 import uploader.uploader
 
@@ -88,6 +88,7 @@ def upload_firmware():
 
 
 if __name__ == "__main__":
+    multiprocessing.freeze_support()
     root = Tk()
     root.title("Firmware Updater")
 
