@@ -5,7 +5,7 @@ block_cipher = None
 binaries = [("C:\\Windows\\System32\\libusb0.dll", ".")]
 
 a = Analysis(
-    ["graphical.py"],
+    ["FirmwareUploader.py"],
     pathex=["C:\\Users\\jmwom\\pinguino-manual-uploader"],
     binaries=binaries,
     datas=[],
@@ -24,7 +24,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name="graphical",
+    name="FirmwareUploader",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -39,5 +39,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name="graphical",
+    name="FirmwareUploader",
 )

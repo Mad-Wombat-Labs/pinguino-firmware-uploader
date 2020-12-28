@@ -67,7 +67,6 @@ def upload_firmware():
 
     up = uploader.uploader.Uploader()
     up.configure_uploader(hexfile, board)
-    print(up)   
     
     popup = Tk()
     popup.wm_title("Uploading")
