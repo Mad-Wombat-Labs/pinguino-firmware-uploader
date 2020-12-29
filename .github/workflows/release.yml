@@ -6,8 +6,8 @@ on:
     branches: [ master ]
   pull_request:
     tags:
-      - 'v*'
-      branches: [ master ]
+    - 'v*'
+    branches: [ master ]
   workflow_dispatch:
 
 name: Build, Release and Upload Release Asset
