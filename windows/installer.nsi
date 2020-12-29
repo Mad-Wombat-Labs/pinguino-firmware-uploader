@@ -41,6 +41,7 @@ ShowInstDetails show                    ;Show installation logs
 !define INSTALLER_NAME                  '${PINGUINO_FU_NAME}-installer'
 !define FILE_OWNER                      'Pinguino-Firmware-Uploader'
 !define FILE_URL                        'https://github.com/Mad-Wombat-Labs/pinguino-firmware-uploader'
+!define GitHub "https://github.com/Mad-Wombat-Labs/pinguino-firmware-uploader/releases/download/"
 
 !define CURL                            "curl.exe"
 
@@ -66,9 +67,9 @@ ShowInstDetails show                    ;Show installation logs
 !define REG_XC8                         "SOFTWARE\Microchip\MPLAB XC8 C Compiler"
 !define REG_PYTHON27                    "SOFTWARE\Python\PythonCore\2.7\InstallPath"
 
-!define URL_SFBASE                      "https://sourceforge.net/projects/pinguinoide/files"
-!define URL_SFOS                        "${URL_SFBASE}/windows"
 !define URL_LIBUSB                      "https://sourceforge.net/projects/libusb-win32/files/libusb-win32-releases"
+
+!define pinguino-fu                      "FirmwareUploader-v${PINGUINO_FU_VERSION}.zip"
 
 ;=======================================================================
 ;General Settings
@@ -96,6 +97,7 @@ VIProductVersion ${INSTALLER_VERSION}
 !insertmacro MUI_PAGE_WELCOME           ; Displays a welcome message
 !insertmacro MUI_PAGE_LICENSE           "LICENSE"
 !insertmacro MUI_PAGE_LICENSE           "DISCLAIMER"
+Page Custom  PAGE_RELEASE PAGE_RELEASE_LEAVE    ; Explanatory data (and set path)
 !insertmacro MUI_PAGE_DIRECTORY         ; Install path
 !insertmacro MUI_PAGE_INSTFILES         ; Install Pinguino
 !insertmacro MUI_PAGE_FINISH            ; End of the installation 
@@ -212,7 +214,6 @@ LangString E_failed ${LANG_FRENCH} "a échoué. Erreur:"
 ;Variables
 ;=======================================================================
 
-Var /GLOBAL SourceForge                 ; Path to SourceForge repository
 Var /GLOBAL url                         ; Used by Download Macro
 Var /GLOBAL program                     ; Used by Download Macro
 
@@ -252,20 +253,20 @@ Section "Uninstall"
     SetShellVarContext all
 
     ;Always delete uninstaller first
-    Delete "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-uninstaller.exe"
+    Delete "$INSTDIR\pinguino-uninstaller.exe"
  
     ;Delete the install directory
-    RMDir /r /REBOOTOK "$INSTDIR\v$PINGUINO_FU_VERSION\"
+    RMDir /r /REBOOTOK "$INSTDIR\"
 
     ;Delete Desktop Icon
     Delete "$DESKTOP\pinguino-fu.lnk"
-    Delete "$DESKTOP\v$PINGUINO_FU_VERSION\${PINGUINO_FU_NAME}.lnk"
+    Delete "$DESKTOP\v${PINGUINO_FU_VERSION}\${PINGUINO_FU_NAME}.lnk"
     
     ;Delete Program Menu
-    RMDir /r "$SMPROGRAMS\${PINGUINO_FU_NAME}\v$PINGUINO_FU_VERSION\"
+    RMDir /r "$SMPROGRAMS\${PINGUINO_FU_NAME}\v${PINGUINO_FU_VERSION}\"
     
     ;Clean the registry base
-    DeleteRegKey /ifempty HKCU "${REG_PINGUINO}\v$PINGUINO_FU_VERSION\"
+    DeleteRegKey /ifempty HKCU "${REG_PINGUINO}\v${PINGUINO_FU_VERSION}\"
     DeleteRegKey HKLM "${REG_UNINSTALL}"
 
 SectionEnd
@@ -293,9 +294,14 @@ Section "Install"
     Call InstallLibUSB
     NoDrivers:
 
+    ;End of installation
+    Call PublishInfo
+    Call MakeShortcuts
+    Call InstallComplete
+    
     ;Install uploader program
 
-    ;End of installation
+    WriteUninstaller "$INSTDIR\pinguinofu-uninstall.exe"
 
 SectionEnd
 
@@ -426,20 +432,19 @@ FunctionEnd
 ;=======================================================================
 
 Function InstallPinguinoFU
-  https://github.com/Mad-Wombt-Labs/pinguino-firmware-uploader/releases/download/
-
-  v0.9.1/FirmwareUploader-v0.9.1.zip
-
-    ;Download Pinguino IDE
-    ${Download} $SourceForge ${pinguino-ide}
+  
+    ${Download} "${GitHub}v${PINGUINO_FU_VERSION}" ${pinguino-fu}
 
     ;Install Pinguino IDE
     ClearErrors
-    nsisunz::UnzipToLog "$EXEDIR\$program" "$INSTDIR"
+    nsisunz::UnzipToLog "$EXEDIR\${pinguino-fu}" "$INSTDIR"
     IfErrors 0 +2
-        Abort "$(E_extracting) ${pinguino-ide}"
-    DetailPrint "${pinguino-ide} $(msg_installed)"
-        
+       Abort "$(E_extracting) ${pinguino-fu}"
+
+   DetailPrint "${pinguino-fu} $(msg_installed)"
+       
+    Delete "$EXECDIR\${pinguino-fu}"    
+	
 FunctionEnd
 
 ;=======================================================================
@@ -487,8 +492,7 @@ Function PublishInfo
     WriteRegStr HKLM "${REG_UNINSTALL}" "Publisher" "${FILE_OWNER}"
     ;Info
     WriteRegStr HKLM "${REG_PINGUINO}" "PinguinoFUName" "${PINGUINO_FU_NAME}"
-    WriteRegStr HKLM "${REG_PINGUINO}" "PinguinoFUVersion" "$PINGUINO_FU_VERSION"
-    WriteRegStr HKLM "${REG_PINGUINO}" "PinguinoFURelease" "$PINGUINO_FU_RELEASE"
+    WriteRegStr HKLM "${REG_PINGUINO}" "PinguinoFUVersion" "${PINGUINO_FU_VERSION}"
     WriteRegStr HKLM "${REG_PINGUINO}" "PinguinoFUPath" "$INSTDIR"
 
 FunctionEnd
@@ -502,15 +506,15 @@ Function MakeShortcuts
     DetailPrint "Adding shortcuts ..."
     ;Extract the icon file to the installation path
     ;/oname change the output name
-    File "/oname=$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" ${PINGUINO_FU_ICON}
+    File "/oname=$INSTDIR\pinguino.ico" ${PINGUINO_FU_ICON}
 
     ;Create desktop shortcut
-    CreateShortCut  "$DESKTOP\${PINGUINO_FU_NAME}-v$PINGUINO_FU_VERSION.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 0 SW_SHOWNORMAL CONTROL|SHIFT|P "Pinguino FU"
+    CreateShortCut  "$DESKTOP\${PINGUINO_FU_NAME}-v${PINGUINO_FU_VERSION}.lnk" "$INSTDIR\FirmwareUploader.exe" "" "$INSTDIR\pinguino.ico" 0 SW_SHOWNORMAL CONTROL|SHIFT|P "Pinguino FU"
 
     ;Create start-menu items
-    CreateDirectory "$SMPROGRAMS\${PINGUINO_FU_NAME}\v$PINGUINO_FU_VERSION\"
-    CreateShortCut  "$SMPROGRAMS\${PINGUINO_FU_NAME}\v$PINGUINO_FU_VERSION\${PINGUINO_FU_NAME}.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|SHIFT|P "Pinguino FU"
-    CreateShortCut  "$SMPROGRAMS\${PINGUINO_FU_NAME}\v$PINGUINO_FU_VERSION\Uninstall.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-uninstall.exe" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|ALT|SHIFT|P "Pinguino FU Uninstaller"
+    CreateDirectory "$SMPROGRAMS\${PINGUINO_FU_NAME}\"
+    CreateShortCut  "$SMPROGRAMS\${PINGUINO_FU_NAME}\v${PINGUINO_FU_VERSION}\${PINGUINO_FU_NAME}.lnk" "$INSTDIR\FirmwareUploader.exe" "" "$INSTDIR\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|SHIFT|P "Pinguino FU"
+    CreateShortCut  "$SMPROGRAMS\${PINGUINO_FU_NAME}\v${PINGUINO_FU_VERSION}\Uninstall.lnk" "$INSTDIR\pinguino-uninstall.exe" "" "$INSTDIR\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|ALT|SHIFT|P "Pinguino FU Uninstaller"
 
 FunctionEnd
 
@@ -519,39 +523,6 @@ FunctionEnd
 ;=======================================================================
 
 Function InstallComplete
-
-    ${If} $PINGUINO_FU_VERSION == ${PINGUINO_FU_TESTING}
-
-        ;Update pinguino-fu.bat
-        DetailPrint "Updating pinguino-fu.bat ..."
-        FileOpen  $0 $INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat w
-        FileWrite $0 "@ECHO OFF"
-        FileWrite $0 "$\r$\n"
-        FileWrite $0 "CD $INSTDIR\v$PINGUINO_FU_VERSION"
-        FileWrite $0 "$\r$\n"
-        FileWrite $0 "$Python27Path\python pinguino-ide.py"
-        FileWrite $0 "$\r$\n"
-        FileClose $0
-
-        ;Execute pinguino-ide post_install routine...
-        ExecWait '"$Python27Path\python" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino\pinguino_reset.py"' $0
-        StrCmp $0 "0" Done
-        DetailPrint "Post-installation $(E_failed) $0!"
-
-    ${Else}
-    
-        ;Update pinguino-fu.bat
-        DetailPrint "Updating pinguino-fu.bat ..."
-        FileOpen  $0 $INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat w
-        FileWrite $0 "@ECHO OFF"
-        FileWrite $0 "$\r$\n"
-        FileWrite $0 "CD $INSTDIR\v$PINGUINO_FU_VERSION"
-        FileWrite $0 "$\r$\n"
-        FileWrite $0 "$Python27Path\python pinguino.py"
-        FileWrite $0 "$\r$\n"
-        FileClose $0
-
-    ${endif}
     
     Done:
     DetailPrint "Installation complete."
@@ -565,6 +536,6 @@ FunctionEnd
 Function LaunchPinguinoFirmwareUploader
 
     ;Start:
-    ExecShell "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat"
+    ExecShell "" "$INSTDIR\FirmwareUploader.exe"
 
 FunctionEnd
