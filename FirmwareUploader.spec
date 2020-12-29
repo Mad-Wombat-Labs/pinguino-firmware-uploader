@@ -2,7 +2,7 @@
 
 block_cipher = None
 
-binaries = [("inlclude\\libusb0.dll", ".")]
+binaries = [("include\\libusb0.dll", ".")]
 
 a = Analysis(
     ["FirmwareUploader.py"],
