@@ -58,7 +58,7 @@ ShowInstDetails show                    ;Show installation logs
 !define MUI_FINISHPAGE_RUN
 !define MUI_FINISHPAGE_RUN_NOTCHECKED
 !define MUI_FINISHPAGE_RUN_TEXT         "Start ${PINGUINO_FU_NAME}"
-!define MUI_FINISHPAGE_RUN_FUNCTION     "LaunchPinguinoIDE"
+!define MUI_FINISHPAGE_RUN_FUNCTION     "LaunchPinguinoFirmwareUploader"
 !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
 
 !define REG_UNINSTALL                   "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PINGUINO_FU_NAME}"
@@ -298,6 +298,41 @@ Section "Install"
     ;End of installation
 
 SectionEnd
+
+;=======================================================================
+; Explanatory page at the beginning
+;=======================================================================
+
+Function PAGE_RELEASE
+
+    nsDialogs::Create 1018
+    Pop $0
+    ${If} $0 == error
+        Abort
+    ${endif}
+    
+    !insertmacro MUI_HEADER_TEXT "First Arg" "Second Arg"
+    
+    ${NSD_CreateBitmap} 0 0 100% 50% "Other Arg"
+    Pop $0
+    ${NSD_SetImage} $0 "$EXEDIR\${PINGUINO_FU_BMP}" $1
+    nsDialogs::Show
+    ${NSD_FreeImage} $1
+
+FunctionEnd
+
+Function PAGE_RELEASE_LEAVE
+
+  ;Detect the architecture of host system (32 or 64 bits)
+  ;and set Pinguino default path
+  ${If} ${RunningX64}
+    StrCpy $INSTDIR "$PROGRAMFILES64\${PINGUINO_FU_NAME}"
+  ${Else}
+    StrCpy $INSTDIR "$PROGRAMFILES32\${PINGUINO_FU_NAME}"
+  ${endif}
+
+FunctionEnd
+
 
 ;=======================================================================
 ;Removes leading & trailing whitespace from a string
