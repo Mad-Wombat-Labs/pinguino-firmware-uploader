@@ -1,4 +1,4 @@
-# This is a basic workflow to help you get started with Actions
+# Workflow to build the windows package (for now)
 
 name: CI
 
@@ -15,22 +15,39 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
+  build-windows:
     # The type of runner that the job will run on
     runs-on: windows-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    strategy:
+      matrix:
+        python-version: [3.9]   # try later with 3.7 to see if we can
+                              # drop this
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      - name: Setup up ${{ matrix.python-version}}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version}}
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Install dependencies
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          python -m pip install --upgrade pip
+          pip install pyusb
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        
+        -name: Lint with flake8 # from github example
+        run: |                  
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10
+        --max-line-length=127 --statistics
+
+        -name: Install pyinstaller
+        run: |
+          pip install pyinstaller
+
+        -name: Run pyinstaller
+        run: |
+          pyinstaller -y FirmwareUploader.spec
