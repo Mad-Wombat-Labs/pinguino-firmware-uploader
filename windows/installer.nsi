@@ -39,7 +39,7 @@ ShowInstDetails show                    ;Show installation logs
 !define PINGUINO_FU_BMP                    "pinguino11.bmp"
 !define INSTALLER_NAME                  '${PINGUINO_FU_NAME}-firmware-uploader'
 !define FILE_OWNER                      'Pinguino-Firmware-Uploader'
-!define FILE_URL                        'https://gitlab.com/2e0byo/pinguino-firmware-uploader/'
+!define FILE_URL                        'https://github.com/Mad-Wombat-Labs/pinguino-firmware-uploader'
 
 !define CURL                            "curl.exe"
 
