@@ -33,11 +33,12 @@ ShowInstDetails show                    ;Show installation logs
 
 !define INSTALLER_VERSION               '0.0.1.0'
 !define LIBUSBWIN32_VERSION             '1.2.6.0'
+!define PINGUINO_FU_VERSION             '0.9.1'
 
-!define PINGUINO_FU_NAME                   'Pinguino-Firmware-Uploader'
-!define PINGUINO_FU_ICON                   "pinguino11.ico"
-!define PINGUINO_FU_BMP                    "pinguino11.bmp"
-!define INSTALLER_NAME                  '${PINGUINO_FU_NAME}-firmware-uploader'
+!define PINGUINO_FU_NAME                'Pinguino-Firmware-Uploader'
+!define PINGUINO_FU_ICON                "pinguino11.ico"
+!define PINGUINO_FU_BMP                 "pinguino11.bmp"
+!define INSTALLER_NAME                  '${PINGUINO_FU_NAME}-installer'
 !define FILE_OWNER                      'Pinguino-Firmware-Uploader'
 !define FILE_URL                        'https://github.com/Mad-Wombat-Labs/pinguino-firmware-uploader'
 
