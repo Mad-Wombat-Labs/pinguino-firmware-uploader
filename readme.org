@@ -15,3 +15,16 @@ written.
 
 I have used it with Pic18F2550/4550 devices.  With anything else it is
 untested.
+
+* [2/3] Todo
+- [X] error out in uploader if fails
+  - Turns out Pinguino, with its typical rather unpythonic python,
+    returns a list of strings one of which will be ‘...successfully
+    uploaded’ (at least in English) if upload succeeds.  So we can
+    test for that.
+- [X] Auto-detect attached pinguino, and tell user to pick which if
+  more than one found.
+  - Slightly harder than it looked.  Let’s just give up for now.
+    (Everything I’ve built uses a 4550 so no real problem in the short
+    term.)
+- [ ] Nicer gui
