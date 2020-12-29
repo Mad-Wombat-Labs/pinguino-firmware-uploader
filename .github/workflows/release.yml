@@ -21,6 +21,12 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      - name: Get Release Version
+        id: vars
+        run: python ::set-output name=tag:: -c "print('${GITHUB_REF}'.split('/')[3].strip())"
+      - name: Set RELEASE_VERSION
+        env:
+          RELEASE_VERSION: ${{steps.vars.outputs.tag}}
       - name: Setup up ${{ matrix.python-version}}
         uses: actions/setup-python@v2
         with:
@@ -50,7 +56,7 @@ jobs:
           pyinstaller -y FirmwareUploader.spec
       - name: Zip up distribution
         run: |
-          7z a FirmwareUploader.zip dist/ -r
+          7z a FirmwareUploader-${{ RELEASE_VERSION }}.zip dist/FirmwareUploader/* -r
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -68,6 +74,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./FirmwareUploader.zip
-          asset_name: FirmwareUploader.zip
+          asset_path: ./FirmwareUploader-${{ RELEASE_VERSION }}.zip
+          asset_name: FirmwareUploader-${{ RELEASE_VERSION }}.zip
           asset_content_type: application/zip
