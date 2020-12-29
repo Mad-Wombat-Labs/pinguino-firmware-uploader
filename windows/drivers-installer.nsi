@@ -19,6 +19,8 @@ ShowInstDetails show                    ;Show installation logs
 ;Includes
 ;=======================================================================
 
+!addplugindir /x86-ansi "plugins/"
+
 ;!include "Sections.nsh"
 !include "WinMessages.nsh"
 !include "MUI2.nsh"
@@ -53,9 +55,6 @@ ShowInstDetails show                    ;Show installation logs
 !define MUI_UNICON                      ${PINGUINO_FU_ICON}
 !define MUI_WELCOMEFINISHPAGE_BITMAP    ${PINGUINO_FU_BMP}
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP  ${PINGUINO_FU_BMP}
-;!define MUI_HEADERIMAGE
-;!define MUI_HEADERIMAGE_RIGHT
-;!define MUI_HEADERIMAGE_BITMAP         ${PINGUINO_FU_BMP}
 
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_FINISHPAGE_RUN
@@ -63,7 +62,6 @@ ShowInstDetails show                    ;Show installation logs
 !define MUI_FINISHPAGE_RUN_TEXT         "Start ${PINGUINO_FU_NAME}"
 !define MUI_FINISHPAGE_RUN_FUNCTION     "LaunchPinguinoIDE"
 !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
-;!define MUI_FINISHPAGE_SHOWREADME $INSTDIR\README.md
 
 !define REG_UNINSTALL                   "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PINGUINO_FU_NAME}"
 !define REG_PINGUINO                    "SOFTWARE\${PINGUINO_FU_NAME}"
@@ -355,7 +353,10 @@ Section "Install"
 
     ;Tells the installer where to extract files
     ;and displays destination in the console window
-    ;SetOutPath $INSTDIR
+    SetOutPath $INSTDIR
+
+    ;Install Pinguino Firmware Uploader
+    Call InstallPinguinoFU
 
 
     ;Install device drivers ?
@@ -580,143 +581,15 @@ FunctionEnd
     Call Download
 !macroend
 
-;=======================================================================
-; Python v2.7 detection and installation routine.
-;=======================================================================
-
-Function InstallPython
-
-    ;Check the register base if Python is installed
-    ;Detect the architecture of host system (32 or 64 bits)
-    ${If} ${RunningX64}
-        SetRegView 64
-    ${Else}
-        SetRegView 32
-    ${endif}
-    ReadRegStr $0 HKLM "${REG_PYTHON27}" ""
-    IfErrors 0 Done
-
-    ;Download the Python installer
-    DetailPrint "Python v2.7 $(msg_not_detected)"
-
-    ${If} ${RunningX64}
-    ${Download} "${URL_PYTHON}/${PYTHON_VERSION}" "python-${PYTHON_VERSION}.amd64.msi"
-    ${Else}
-    ${Download} "${URL_PYTHON}/${PYTHON_VERSION}" "python-${PYTHON_VERSION}.msi"
-    ${endif}
-
-    ;Install Python
-    ExecWait '"msiexec" /i "$EXEDIR\$program"' $0
-    ${If} $0 != "0"
-        Abort "Python v2.7 $(E_installing) $0!"
-    ${endif}
-    ReadRegStr $0 HKLM "${REG_PYTHON27}" ""
-    ;Remove $program
-  
-    Done:
-    DetailPrint "Python v2.7 path is $0"
-    DetailPrint "Python v2.7 $(msg_installed)"
-    ;StrCpy $Python27Path $0
-    ${StrTrim} $Python27Path $0
-    
-FunctionEnd
-
-;=======================================================================
-; Detect, install or upgrade Pip, PySide, PyUSB, Wheel, BeautifullSoup4, Setuptools
-; Note Pip is already installed when Python version > 2.7.9.
-; The installer just need to update it
-;=======================================================================
-
-Function InstallPythonDep
-
-    ;PIP module detection
-    IfFileExists "$Python27Path\Scripts\pip.exe" Update +1
-
-    ;Download PIP
-    DetailPrint "PyPIP $(msg_not_detected)"
-    ;SetOutPath "$TEMP"
-    ${Download} ${URL_PYTHONPIP} ${PyPIP}
-
-    ;Install PIP
-    ;ExecWait '"$Python27Path\python" "$TEMP\${PyPIP}"' $0
-    ExecWait '"$Python27Path\python" "$EXEDIR\${PyPIP}"' $0
-    StrCmp $0 "0" Update
-    Abort "PyPIP $(E_installing) $0!"
-    ;Remove $program
-
-    Update:
-    ;Update PIP and dependencies
-    ExecWait '"$Python27Path\python" -m pip install --upgrade pip pyside pyusb wheel beautifulsoup4 setuptools requests' $0
-    StrCmp $0 "0" Done
-    Abort "Python dependencies $(E_installing) $0!"
-
-    Done:
-    ;Remove Pinguino's Python package
-    DetailPrint "Delete Pinguino's Python package if it exists ..."
-    ExecWait '"$Python27Path\python" -m pip --yes uninstall pinguino' $0
-    DetailPrint "Python dependencies $(msg_installed)"
-
-FunctionEnd
-
-;=======================================================================
-; Install Pinguino last update
-;=======================================================================
-
-Function InstallPinguino
-
-    ;get the installed version
-    ${If} ${FileExists} "$INSTDIR\v$PINGUINO_FU_VERSION\update-$PINGUINO_FU_RELEASE"
-        FileOpen  $0 "$INSTDIR\v$PINGUINO_FU_VERSION\update-$PINGUINO_FU_RELEASE" r
-        FileRead  $0 $1
-        FileClose $0
-        ${StrTrim} $pinguino_actual_version $1
-    ${Else}
-        ;DetailPrint "*** update not found ***"
-        StrCpy $pinguino_actual_version 'unknown'
-    ${endif}
-
-    DetailPrint "Pinguino last update $pinguino_actual_version"
-
-    ;get the latest version
-    ${Download} ${URL_SFBASE} "update-$PINGUINO_FU_RELEASE"
-
-    ${If} ${FileExists} "$EXEDIR\update-$PINGUINO_FU_RELEASE"
-        FileOpen  $0 "$EXEDIR\update-$PINGUINO_FU_RELEASE" r
-        FileRead  $0 $1
-        FileClose $0
-        ${StrTrim} $pinguino_last_version $1
-    ${Else}
-        StrCpy $pinguino_last_version 'unknown'
-    ${endif}
-
-    DetailPrint "Pinguino available update $pinguino_last_version"
-
-    ;compare the 2 versions
-    ;StrCmp str1 str2 jump_if_equal [jump_if_not_equal]
-    StrCmp $pinguino_last_version 'unknown' StartDownload
-    StrCmp $pinguino_actual_version 'unknown' StartDownload
-    StrCmp $pinguino_actual_version $pinguino_last_version UpToDate
-
-    StartDownload:
-
-    ;IfFileExists "$INSTDIR\update" 0 +2
-    ;Delete "$INSTDIR\update"
-    CopyFiles "$EXEDIR\update-$PINGUINO_FU_RELEASE" "$INSTDIR\v$PINGUINO_FU_VERSION\update-$PINGUINO_FU_RELEASE"
-    DetailPrint "New version available : $pinguino_last_version"
-
-    Call InstallPinguinoIde
-    Call InstallPinguinoLibraries
-
-    UpToDate:
-    DetailPrint "$(msg_uptodate)"
-
-FunctionEnd
 
 ;=======================================================================
 ; pinguino-ide installation routine.
 ;=======================================================================
 
-Function InstallPinguinoIde
+Function InstallPinguinoFU
+  https://github.com/Mad-Wombt-Labs/pinguino-firmware-uploader/releases/download/
+
+  v0.9.1/FirmwareUploader-v0.9.1.zip
 
     ;Download Pinguino IDE
     ${Download} $SourceForge ${pinguino-ide}
@@ -729,43 +602,6 @@ Function InstallPinguinoIde
     DetailPrint "${pinguino-ide} $(msg_installed)"
         
 FunctionEnd
-
-;=======================================================================
-; pinguino-libraries installation routine.
-;=======================================================================
-
-Function InstallPinguinoLibraries
-
-    ;Download Pinguino libraries
-    ${Download} $SourceForge ${pinguino-libraries}
-
-    ;Install Pinguino Libraries
-    ClearErrors
-    nsisunz::UnzipToLog "$EXEDIR\$program" "$INSTDIR"
-    IfErrors 0 +2
-        Abort "$(E_extracting) ${pinguino-libraries}"
-    DetailPrint "${pinguino-libraries} $(msg_installed)"
-
-FunctionEnd
-
-;=======================================================================
-; Pinguino device driver installation
-;=======================================================================
-
-;Function InstallPinguinoDrivers
-
-    ;Copy the drivers directory
-    ;SetOutPath "$INSTDIR\drivers"
-    ;File /r "drivers\*.*"
-
-    ;Install all the drivers
-    ;DetailPrint "$(msg_installing_drivers)..."
-    ;nsExec::Exec '"rundll32" syssetup,SetupInfObjectInstallAction DefaultInstall 128 "$INSTDIR\drivers\mchpusb.inf"'
-    ;nsExec::Exec '"rundll32" syssetup,SetupInfObjectInstallAction DefaultInstall 128 "$INSTDIR\drivers\mchpcdc.inf"'
-
-    ;MessageBox MB_ICONINFORMATION "The Pinguino Drivers have been installed on your System. If you experience any problem, proceed to a manual installation : go to the drivers directory, right-clic and install mchpusb.inf and mchpcdc.inf"
-
-;FunctionEnd
 
 ;=======================================================================
 ;Install LibUSB and Pinguino Drivers
@@ -798,87 +634,6 @@ Function InstallLibUSB
     DetailPrint "LibUSB $(msg_installed)"
     ;ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\LibUSB-Win32_is1\InstallLocation" ""
     ;StrCpy $LibUSBPath $0
-
-FunctionEnd
-
-;=======================================================================
-; SDCC compiler installation routine.
-;=======================================================================
-
-Function InstallSDCC
-
-    ;Download SDCC
-    ${If} ${RunningX64}
-    ${Download} ${URL_SFOS} ${pinguino-sdcc64}
-    ${Else}
-    ${Download} ${URL_SFOS} ${pinguino-sdcc32}
-    ${endif}
-
-    ;Install SDCC
-    ClearErrors
-    nsisunz::UnzipToLog "$EXEDIR\$program" "$INSTDIR"
-    Pop $0
-    StrCmp $0 "success" Done
-    Abort "$(E_extracting) $program $0"
-    Done:
-    DetailPrint "$program $(msg_installed) : $INSTDIR"
-
-FunctionEnd
-
-;=======================================================================
-; XC8 compiler installation routine.
-;=======================================================================
-
-Function InstallXC8
-
-    ;Download XC8 Installer
-    ;StrCpy $url ${URL_SFOS}
-    ;StrCpy $program ${pinguino-xc8}
-    ${Download} ${URL_MCHP} ${pinguino-xc8-latest}
-
-    ;Run XC8 Installer
-    ;nsExec::Exec '"$EXEDIR\${pinguino-xc8}"'
-    nsExec::Exec '"$EXEDIR\${pinguino-xc8-latest}"'
-    Pop $0
-    StrCmp $0 "0" +2
-    DetailPrint "XC8 $(E_installing) : $0!"
-
-    ${If} ${RunningX64}
-        SetRegView 32
-    ${endif}
-    ReadRegStr $XC8_VERSION HKLM "${REG_XC8}" "Version"
-    ReadRegStr $XC8_PATH HKLM "${REG_XC8}" "Location"
-    ${If} ${RunningX64}
-        SetRegView 64
-    ${endif}
-    
-    DetailPrint "XC8 v$XC8_VERSION path is $XC8_PATH"
-    DetailPrint "XC8 v$XC8_VERSION $(msg_installed)"
-
-FunctionEnd
-
-;=======================================================================
-; 32-bits Pinguino compilers installation routine.
-;=======================================================================
-
-Function InstallGCC
-
-    ;Download GCC for Pinguino
-    ${If} ${RunningX64}
-    ${Download} ${URL_SFOS} ${pinguino-gcc64}
-    ${Else}
-    ${Download} ${URL_SFOS} ${pinguino-gcc32}
-    ${endif}
-
-    ;Install GCC for Pinguino
-    ClearErrors
-    nsisunz::UnzipToLog "$EXEDIR\$program" "$INSTDIR"
-    Pop $0
-    StrCmp $0 "success" Done
-    Abort "$(E_extracting) $program $0"
-    Done:
-    DetailPrint "$program $(msg_installed) : $INSTDIR"
-    ;Remove $program
 
 FunctionEnd
 
@@ -919,13 +674,13 @@ Function MakeShortcuts
     File "/oname=$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" ${PINGUINO_FU_ICON}
 
     ;Create desktop shortcut
-    ;CreateShortCut  "$DESKTOP\${PINGUINO_FU_NAME}.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.bat" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|ALT|P "Pinguino IDE"
-    ;CreateShortCut  "$DESKTOP\${PINGUINO_FU_NAME}-v$PINGUINO_FU_VERSION.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.bat" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|ALT|P "Pinguino IDE"
-    CreateShortCut  "$DESKTOP\${PINGUINO_FU_NAME}-v$PINGUINO_FU_VERSION.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.bat" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 0 SW_SHOWNORMAL CONTROL|SHIFT|P "Pinguino IDE"
+    ;CreateShortCut  "$DESKTOP\${PINGUINO_FU_NAME}.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|ALT|P "Pinguino IDE"
+    ;CreateShortCut  "$DESKTOP\${PINGUINO_FU_NAME}-v$PINGUINO_FU_VERSION.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|ALT|P "Pinguino IDE"
+    CreateShortCut  "$DESKTOP\${PINGUINO_FU_NAME}-v$PINGUINO_FU_VERSION.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 0 SW_SHOWNORMAL CONTROL|SHIFT|P "Pinguino IDE"
 
     ;Create start-menu items
     CreateDirectory "$SMPROGRAMS\${PINGUINO_FU_NAME}\v$PINGUINO_FU_VERSION\"
-    CreateShortCut  "$SMPROGRAMS\${PINGUINO_FU_NAME}\v$PINGUINO_FU_VERSION\${PINGUINO_FU_NAME}.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.bat" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|SHIFT|P "Pinguino IDE"
+    CreateShortCut  "$SMPROGRAMS\${PINGUINO_FU_NAME}\v$PINGUINO_FU_VERSION\${PINGUINO_FU_NAME}.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|SHIFT|P "Pinguino IDE"
     CreateShortCut  "$SMPROGRAMS\${PINGUINO_FU_NAME}\v$PINGUINO_FU_VERSION\Uninstall.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-uninstall.exe" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|ALT|SHIFT|P "Pinguino Uninstaller"
 
 FunctionEnd
@@ -957,10 +712,10 @@ Function InstallComplete
 
     ${If} $PINGUINO_FU_VERSION == ${PINGUINO_FU_TESTING}
 
-        ;Update pinguino.bat
-        DetailPrint "Updating pinguino.bat ..."
-        ;Delete  $INSTDIR\pinguino.bat
-        FileOpen  $0 $INSTDIR\v$PINGUINO_FU_VERSION\pinguino.bat w
+        ;Update pinguino-fu.bat
+        DetailPrint "Updating pinguino-fu.bat ..."
+        ;Delete  $INSTDIR\pinguino-fu.bat
+        FileOpen  $0 $INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat w
         FileWrite $0 "@ECHO OFF"
         FileWrite $0 "$\r$\n"
         FileWrite $0 "CD $INSTDIR\v$PINGUINO_FU_VERSION"
@@ -977,10 +732,10 @@ Function InstallComplete
 
     ${Else}
     
-        ;Update pinguino.bat
-        DetailPrint "Updating pinguino.bat ..."
-        ;Delete  $INSTDIR\pinguino.bat
-        FileOpen  $0 $INSTDIR\v$PINGUINO_FU_VERSION\pinguino.bat w
+        ;Update pinguino-fu.bat
+        DetailPrint "Updating pinguino-fu.bat ..."
+        ;Delete  $INSTDIR\pinguino-fu.bat
+        FileOpen  $0 $INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat w
         FileWrite $0 "@ECHO OFF"
         FileWrite $0 "$\r$\n"
         FileWrite $0 "CD $INSTDIR\v$PINGUINO_FU_VERSION"
@@ -1002,15 +757,12 @@ Function InstallComplete
 FunctionEnd
 
 ;=======================================================================
-; Launch Pinguino IDE
+; Launch Pinguino Firmware Uploader
 ;=======================================================================
 
-Function LaunchPinguinoIDE
+Function LaunchPinguinoFirmwareUploader
 
-    ;StrCmp $PINGUINO_FU_VERSION "11" Start +1
-    ;CopyFiles "$Python27Path\Lib\site-packages\pinguino\pinguino.bat" "$INSTDIR\pinguino.bat"
-    
     ;Start:
-    ExecShell "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.bat"
+    ExecShell "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat"
 
 FunctionEnd
