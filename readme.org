@@ -1,30 +1,48 @@
-#+title: Manual Upload Script for Pinguino boards
+#+Title: Deployable Pinguino Firmware Uploader
 
-* Description
+* Background
 
-This repositories contains a minimal pinguino upload script for those
-who at one time used the [[http://pinguino.cc][Pinguino]] ide and now just want to upload code
-to PICs flashed with the pinguino bootloader, without needing to load
-the whole hog.
+I sometimes give people hardware built around Microchip PICs running
+the [[http://pinguino.cc][Pinguino]] bootloader, which makes flashing new firmware as easy as
+connecting a usb cable and running a script to handle the usb bulk
+transfers.
 
-It started life as a script I found in the pinguino sources itself,
-but which since seems to have been deleted.  It underwent minor
-modifications to work with python3, whose usb support is clearly
-slightly different from that which was in place back when it was first
-written.
+Although the Pinguino project provides a lot of code, I do not
+actually use its IDE to develop: rather, I write directly for XC8,
+sometimes using pinguino libraries, sometimes not.  So long as one
+sets the offset properly the bootloader doesn’t care.  This way I can
+use a proper editor, etc.  In order to install I have a very basic
+script which connects to an attached Pinguino device in bootloader
+mode.  It is nothing more than a bunch of hacks on top of the uploader
+code used by Pinguino itself at the time, and I have made no attempts
+to translate Pingunio’s rather idiosyncratic Python (passing lists of
+string around to signify status, anyone? and
+~~VERY_LONG_CONSTANT_NAMES~? ;) ) into something more Pythonic.
 
-I have used it with Pic18F2550/4550 devices.  With anything else it is
-untested.
+Having shipped a project with an embarassing bug in it to the other
+side of the Atlantic I needed a basic GUI I could send which would run
+first time under Windows.  This turned out to be a complete nightmare,
+as the Windoze (Almost)Operating System is headstrong and incompetent
+in equal measure, but this repository contains a single installer
+which will install a simple program, along with drivers, to do the
+upload.
 
-* [2/3] Todo
-- [X] error out in uploader if fails
-  - Turns out Pinguino, with its typical rather unpythonic python,
-    returns a list of strings one of which will be ‘...successfully
-    uploaded’ (at least in English) if upload succeeds.  So we can
-    test for that.
-- [X] Auto-detect attached pinguino, and tell user to pick which if
-  more than one found.
-  - Slightly harder than it looked.  Let’s just give up for now.
-    (Everything I’ve built uses a 4550 so no real problem in the short
-    term.)
-- [ ] Nicer gui
+* Installation
+
+Write later.
+
+* Implementation
+
+The Pinguino NSIS installer script was heavily hacked to produce a
+NSIS script which compiles to an installer to:
+
+- download and install libusb and the pinguino drivers for windows
+- download and install pyinstaller packaged firmware uploader
+- add a shortcut.
+
+* Permissions
+
+I have no permission to call this Pinguino-x and will stop doing so if
+anybody is offended.  However I hope, rather, that it might stimulate
+some interest in this very useful project, which has been rather
+unfortunately sidelined by the success of Arduino.
