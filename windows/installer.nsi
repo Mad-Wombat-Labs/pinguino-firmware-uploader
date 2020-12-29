@@ -170,6 +170,17 @@ LangString msg_uptodate ${LANG_PORTUGUESEBR} "Your copy is up to date."
 LangString msg_uptodate ${LANG_ITALIAN} "Your copy is up to date."
 LangString msg_uptodate ${LANG_FRENCH} "Votre installation est à jour."
 
+
+;=======================================================================
+;Questions
+;=======================================================================
+
+LangString Q_install_drivers ${LANG_ENGLISH} "Do you want to install the Pinguino device drivers ?"
+LangString Q_install_drivers ${LANG_SPANISH} "Deseas instalar los drivers para la placa Pinguino ahora?"
+LangString Q_install_drivers ${LANG_PORTUGUESEBR} "Você deseja instalar os Drivers para a placa do Pinguino Agora?"
+LangString Q_install_drivers ${LANG_ITALIAN} "Vuoi installare ora i driver per la scheda Pinguino?"
+LangString Q_install_drivers ${LANG_FRENCH} "Voulez-vous installer les pilotes USB pour les cartes Pinguino ?"
+
 ;=======================================================================
 ;Errors
 ;=======================================================================
