@@ -1,6 +1,6 @@
 # Workflow to build the windows package (for now)
 
-name: CI
+name: Tests
 
 # Controls when the action will run. 
 on:
