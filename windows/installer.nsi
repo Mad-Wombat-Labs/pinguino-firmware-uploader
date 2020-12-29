@@ -534,6 +534,7 @@ FunctionEnd
 ;=======================================================================
 
 Function InstallComplete
+  Delete "$EXECDIR\${CURL}"    
   
   Done:
     DetailPrint "Installation complete."
