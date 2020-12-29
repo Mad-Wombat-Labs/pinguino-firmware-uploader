@@ -2,11 +2,11 @@
 
 block_cipher = None
 
-binaries = [("C:\\Windows\\System32\\libusb0.dll", ".")]
+binaries = [("inlclude\\libusb0.dll", ".")]
 
 a = Analysis(
     ["FirmwareUploader.py"],
-    pathex=["C:\\Users\\jmwom\\pinguino-manual-uploader"],
+    pathex=["pinguino-firmware-uploader\\"],
     binaries=binaries,
     datas=[],
     hiddenimports=[],
