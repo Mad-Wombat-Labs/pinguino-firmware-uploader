@@ -219,27 +219,27 @@ Var /GLOBAL program                     ; Used by Download Macro
 
 Function .onInit
 
-    !insertmacro MUI_LANGDLL_DISPLAY
-    InitPluginsDir
+  !insertmacro MUI_LANGDLL_DISPLAY
+  InitPluginsDir
 
-    UserInfo::GetAccountType
-    pop $0
-    ${If} $0 != "admin" ;Require admin rights on NT4+
+  UserInfo::GetAccountType
+  pop $0
+  ${If} $0 != "admin" ;Require admin rights on NT4+
     MessageBox mb_iconstop "Administrator rights required!"
     SetErrorLevel 740 ;ERROR_ELEVATION_REQUIRED
     Quit
-    ${EndIf}
+  ${EndIf}
 
-    ;Embed files
-    SetOutPath $EXEDIR
-    File ${CURL}
-    File ${PINGUINO_FU_BMP}
+  ;Embed files
+  SetOutPath $EXEDIR
+  File ${CURL}
+  File ${PINGUINO_FU_BMP}
 
 FunctionEnd
 
 Function un.onInit
 
-    !insertmacro MUI_LANGDLL_DISPLAY
+  !insertmacro MUI_LANGDLL_DISPLAY
 
 FunctionEnd
 
@@ -249,25 +249,25 @@ FunctionEnd
 
 Section "Uninstall"
 
-    ;Uninstall for all users
-    SetShellVarContext all
+  ;Uninstall for all users
+  SetShellVarContext all
 
-    ;Always delete uninstaller first
-    Delete "$INSTDIR\pinguino-uninstaller.exe"
- 
-    ;Delete the install directory
-    RMDir /r /REBOOTOK "$INSTDIR\"
+  ;Always delete uninstaller first
+  Delete "$INSTDIR\pinguino-uninstaller.exe"
+  
+  ;Delete the install directory
+  RMDir /r /REBOOTOK "$INSTDIR\"
 
-    ;Delete Desktop Icon
-    Delete "$DESKTOP\pinguino-fu.lnk"
-    Delete "$DESKTOP\v${PINGUINO_FU_VERSION}\${PINGUINO_FU_NAME}.lnk"
-    
-    ;Delete Program Menu
-    RMDir /r "$SMPROGRAMS\${PINGUINO_FU_NAME}\v${PINGUINO_FU_VERSION}\"
-    
-    ;Clean the registry base
-    DeleteRegKey /ifempty HKCU "${REG_PINGUINO}\v${PINGUINO_FU_VERSION}\"
-    DeleteRegKey HKLM "${REG_UNINSTALL}"
+  ;Delete Desktop Icon
+  Delete "$DESKTOP\pinguino-fu.lnk"
+  Delete "$DESKTOP\v${PINGUINO_FU_VERSION}\${PINGUINO_FU_NAME}.lnk"
+  
+  ;Delete Program Menu
+  RMDir /r "$SMPROGRAMS\${PINGUINO_FU_NAME}\v${PINGUINO_FU_VERSION}\"
+  
+  ;Clean the registry base
+  DeleteRegKey /ifempty HKCU "${REG_PINGUINO}\v${PINGUINO_FU_VERSION}\"
+  DeleteRegKey HKLM "${REG_UNINSTALL}"
 
 SectionEnd
 
@@ -277,22 +277,22 @@ SectionEnd
 
 Section "Install"
 
-    ;Install for all users
-    SetShellVarContext all
+  ;Install for all users
+  SetShellVarContext all
 
-    ;Tells the installer where to extract files
-    ;and displays destination in the console window
-    SetOutPath $INSTDIR
+  ;Tells the installer where to extract files
+  ;and displays destination in the console window
+  SetOutPath $INSTDIR
 
-    ;Install Pinguino Firmware Uploader
-    Call InstallPinguinoFU
+  ;Install Pinguino Firmware Uploader
+  Call InstallPinguinoFU
 
 
-    ;Install device drivers ?
-    MessageBox MB_YESNO|MB_ICONQUESTION "$(Q_install_drivers)" IDNO NoDrivers
-    MessageBox MB_OK|MB_ICONINFORMATION "Note Vendor:Product ID's$\r$\n$\r$\n 8-bit Pinguino : 04D8:FEAA$\r$\n32-bit Pinguino : 04D8:003C" IDNO NoDrivers
-    Call InstallLibUSB
-    NoDrivers:
+  ;Install device drivers ?
+  MessageBox MB_YESNO|MB_ICONQUESTION "$(Q_install_drivers)" IDNO NoDrivers
+  MessageBox MB_OK|MB_ICONINFORMATION "Note Vendor:Product ID's$\r$\n$\r$\n 8-bit Pinguino : 04D8:FEAA$\r$\n32-bit Pinguino : 04D8:003C" IDNO NoDrivers
+  Call InstallLibUSB
+  NoDrivers:
 
     ;End of installation
     Call PublishInfo
@@ -311,19 +311,19 @@ SectionEnd
 
 Function PAGE_RELEASE
 
-    nsDialogs::Create 1018
-    Pop $0
-    ${If} $0 == error
-        Abort
-    ${endif}
-    
-    !insertmacro MUI_HEADER_TEXT "First Arg" "Second Arg"
-    
-    ${NSD_CreateBitmap} 0 0 100% 50% "Other Arg"
-    Pop $0
-    ${NSD_SetImage} $0 "$EXEDIR\${PINGUINO_FU_BMP}" $1
-    nsDialogs::Show
-    ${NSD_FreeImage} $1
+  nsDialogs::Create 1018
+  Pop $0
+  ${If} $0 == error
+    Abort
+  ${endif}
+  
+  !insertmacro MUI_HEADER_TEXT "First Arg" "Second Arg"
+  
+  ${NSD_CreateBitmap} 0 0 100% 50% "Other Arg"
+  Pop $0
+  ${NSD_SetImage} $0 "$EXEDIR\${PINGUINO_FU_BMP}" $1
+  nsDialogs::Show
+  ${NSD_FreeImage} $1
 
 FunctionEnd
 
@@ -346,10 +346,10 @@ FunctionEnd
 
 Function StrTrim
 
-    Exch $R1 ; Original string
-    Push $R2
- 
-    Loop:
+  Exch $R1 ; Original string
+  Push $R2
+  
+  Loop:
     StrCpy $R2 "$R1" 1
     StrCmp "$R2" " " TrimLeft
     StrCmp "$R2" "\" TrimLeft
@@ -358,11 +358,11 @@ Function StrTrim
     StrCmp "$R2" "$\t" TrimLeft
     GoTo Loop2
     
-    TrimLeft:   
+  TrimLeft:   
     StrCpy $R1 "$R1" "" 1
     Goto Loop
- 
-    Loop2:
+    
+  Loop2:
     StrCpy $R2 "$R1" 1 -1
     StrCmp "$R2" " " TrimRight
     StrCmp "$R2" "\" TrimRight
@@ -371,22 +371,22 @@ Function StrTrim
     StrCmp "$R2" "$\t" TrimRight
     GoTo Done
 
-    TrimRight:  
+  TrimRight:  
     StrCpy $R1 "$R1" -1
     Goto Loop2
- 
-    Done:
+    
+  Done:
     Pop $R2
     Exch $R1
 
 FunctionEnd
 
 !define StrTrim "!insertmacro StrTrim"
- 
+
 !macro StrTrim ResultVar String
-    Push "${String}"
-    Call StrTrim
-    Pop "${ResultVar}"
+  Push "${String}"
+  Call StrTrim
+  Pop "${ResultVar}"
 !macroend
 
 ;=======================================================================
@@ -395,14 +395,14 @@ FunctionEnd
 
 Function Download
 
-    ; Swap the TOP TWO values of the stack
-    Exch
-    Pop $url
-    Pop $program
-    
-    Marquee::start /NOUNLOAD /swing /step=1 /scrolls=1 /top=0 /height=18 /width=-1 "$(msg_downloading) $program ..."
-    DetailPrint "$(msg_downloading) $program ..."
-    Start:
+  ; Swap the TOP TWO values of the stack
+  Exch
+  Pop $url
+  Pop $program
+  
+  Marquee::start /NOUNLOAD /swing /step=1 /scrolls=1 /top=0 /height=18 /width=-1 "$(msg_downloading) $program ..."
+  DetailPrint "$(msg_downloading) $program ..."
+  Start:
     ClearErrors
     nsExec::ExecToLog '"$EXEDIR\curl.exe" --progress-bar -Lk $url/$program -o "$EXEDIR\$program"'
     Pop $0
@@ -412,18 +412,18 @@ Function Download
     DetailPrint "We try again."
     GoTo Start
 
-    Done:
+  Done:
     DetailPrint "$program $(msg_downloaded)"
     Marquee::stop
 
 FunctionEnd
 
 !define Download "!insertmacro Download"
- 
+
 !macro Download URL PROGRAM
-    Push "${URL}"
-    Push "${PROGRAM}"
-    Call Download
+  Push "${URL}"
+  Push "${PROGRAM}"
+  Call Download
 !macroend
 
 
@@ -433,18 +433,18 @@ FunctionEnd
 
 Function InstallPinguinoFU
   
-    ${Download} "${GitHub}v${PINGUINO_FU_VERSION}" ${pinguino-fu}
+  ${Download} "${GitHub}v${PINGUINO_FU_VERSION}" ${pinguino-fu}
 
-    ;Install Pinguino IDE
-    ClearErrors
-    nsisunz::UnzipToLog "$EXEDIR\${pinguino-fu}" "$INSTDIR"
-    IfErrors 0 +2
-       Abort "$(E_extracting) ${pinguino-fu}"
+  ;Install Pinguino IDE
+  ClearErrors
+  nsisunz::UnzipToLog "$EXEDIR\${pinguino-fu}" "$INSTDIR"
+  IfErrors 0 +2
+  Abort "$(E_extracting) ${pinguino-fu}"
 
-   DetailPrint "${pinguino-fu} $(msg_installed)"
-       
-    Delete "$EXECDIR\${pinguino-fu}"    
-	
+  DetailPrint "${pinguino-fu} $(msg_installed)"
+  
+  Delete "$EXECDIR\${pinguino-fu}"    
+  
 FunctionEnd
 
 ;=======================================================================
@@ -454,23 +454,23 @@ FunctionEnd
 Function InstallLibUSB
 
 
-    ;Download LibUSB
-    ${Download} "${URL_LIBUSB}/${LIBUSBWIN32_VERSION}" "libusb-win32-bin-${LIBUSBWIN32_VERSION}.zip"
-    
-    ;Unzip LibUSB
-    ClearErrors
-    nsisunz::UnzipToLog "$EXEDIR\$program" "$EXEDIR"
-    IfErrors 0 +2
-        Abort "$(E_extracting) $program"
+  ;Download LibUSB
+  ${Download} "${URL_LIBUSB}/${LIBUSBWIN32_VERSION}" "libusb-win32-bin-${LIBUSBWIN32_VERSION}.zip"
+  
+  ;Unzip LibUSB
+  ClearErrors
+  nsisunz::UnzipToLog "$EXEDIR\$program" "$EXEDIR"
+  IfErrors 0 +2
+  Abort "$(E_extracting) $program"
 
-    ;Run LibUSB
-    nsExec::Exec '"$EXEDIR\libusb-win32-bin-${LIBUSBWIN32_VERSION}\bin\inf-wizard.exe"'
-    Pop $0
-    StrCmp $0 "0" Done
-    Abort "LibUSB $(E_installing) $0!"
-    ;Remove $program
+  ;Run LibUSB
+  nsExec::Exec '"$EXEDIR\libusb-win32-bin-${LIBUSBWIN32_VERSION}\bin\inf-wizard.exe"'
+  Pop $0
+  StrCmp $0 "0" Done
+  Abort "LibUSB $(E_installing) $0!"
+  ;Remove $program
 
-    Done:
+  Done:
     DetailPrint "LibUSB $(msg_installed)"
 
 FunctionEnd
@@ -481,19 +481,19 @@ FunctionEnd
 
 Function PublishInfo
 
-    DetailPrint "Writing Register Database ..."
-    ;Uninstall
-    WriteRegStr HKCU "Software\${PINGUINO_FU_NAME}" "" "$INSTDIR"
-    WriteRegStr HKLM "${REG_UNINSTALL}" "DisplayName" "${PINGUINO_FU_NAME}"
-    WriteRegStr HKLM "${REG_UNINSTALL}" "UninstallString" "$\"$INSTDIR\pinguino-uninstall.exe$\""
-    WriteRegStr HKLM "${REG_UNINSTALL}" "QuietUninstallString" "$\"$INSTDIR\pinguino-uninstall.exe$\" /S"
-    WriteRegStr HKLM "${REG_UNINSTALL}" "HelpLink" "${FILE_URL}"
-    WriteRegStr HKLM "${REG_UNINSTALL}" "URLInfoAbout" "${FILE_URL}"
-    WriteRegStr HKLM "${REG_UNINSTALL}" "Publisher" "${FILE_OWNER}"
-    ;Info
-    WriteRegStr HKLM "${REG_PINGUINO}" "PinguinoFUName" "${PINGUINO_FU_NAME}"
-    WriteRegStr HKLM "${REG_PINGUINO}" "PinguinoFUVersion" "${PINGUINO_FU_VERSION}"
-    WriteRegStr HKLM "${REG_PINGUINO}" "PinguinoFUPath" "$INSTDIR"
+  DetailPrint "Writing Register Database ..."
+  ;Uninstall
+  WriteRegStr HKCU "Software\${PINGUINO_FU_NAME}" "" "$INSTDIR"
+  WriteRegStr HKLM "${REG_UNINSTALL}" "DisplayName" "${PINGUINO_FU_NAME}"
+  WriteRegStr HKLM "${REG_UNINSTALL}" "UninstallString" "$\"$INSTDIR\pinguino-uninstall.exe$\""
+  WriteRegStr HKLM "${REG_UNINSTALL}" "QuietUninstallString" "$\"$INSTDIR\pinguino-uninstall.exe$\" /S"
+  WriteRegStr HKLM "${REG_UNINSTALL}" "HelpLink" "${FILE_URL}"
+  WriteRegStr HKLM "${REG_UNINSTALL}" "URLInfoAbout" "${FILE_URL}"
+  WriteRegStr HKLM "${REG_UNINSTALL}" "Publisher" "${FILE_OWNER}"
+  ;Info
+  WriteRegStr HKLM "${REG_PINGUINO}" "PinguinoFUName" "${PINGUINO_FU_NAME}"
+  WriteRegStr HKLM "${REG_PINGUINO}" "PinguinoFUVersion" "${PINGUINO_FU_VERSION}"
+  WriteRegStr HKLM "${REG_PINGUINO}" "PinguinoFUPath" "$INSTDIR"
 
 FunctionEnd
 
@@ -503,18 +503,18 @@ FunctionEnd
 
 Function MakeShortcuts
 
-    DetailPrint "Adding shortcuts ..."
-    ;Extract the icon file to the installation path
-    ;/oname change the output name
-    File "/oname=$INSTDIR\pinguino.ico" ${PINGUINO_FU_ICON}
+  DetailPrint "Adding shortcuts ..."
+  ;Extract the icon file to the installation path
+  ;/oname change the output name
+  File "/oname=$INSTDIR\pinguino.ico" ${PINGUINO_FU_ICON}
 
-    ;Create desktop shortcut
-    CreateShortCut  "$DESKTOP\${PINGUINO_FU_NAME}-v${PINGUINO_FU_VERSION}.lnk" "$INSTDIR\FirmwareUploader.exe" "" "$INSTDIR\pinguino.ico" 0 SW_SHOWNORMAL CONTROL|SHIFT|P "Pinguino FU"
+  ;Create desktop shortcut
+  CreateShortCut  "$DESKTOP\${PINGUINO_FU_NAME}-v${PINGUINO_FU_VERSION}.lnk" "$INSTDIR\FirmwareUploader.exe" "" "$INSTDIR\pinguino.ico" 0 SW_SHOWNORMAL CONTROL|SHIFT|P "Pinguino FU"
 
-    ;Create start-menu items
-    CreateDirectory "$SMPROGRAMS\${PINGUINO_FU_NAME}\"
-    CreateShortCut  "$SMPROGRAMS\${PINGUINO_FU_NAME}\v${PINGUINO_FU_VERSION}\${PINGUINO_FU_NAME}.lnk" "$INSTDIR\FirmwareUploader.exe" "" "$INSTDIR\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|SHIFT|P "Pinguino FU"
-    CreateShortCut  "$SMPROGRAMS\${PINGUINO_FU_NAME}\v${PINGUINO_FU_VERSION}\Uninstall.lnk" "$INSTDIR\pinguino-uninstall.exe" "" "$INSTDIR\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|ALT|SHIFT|P "Pinguino FU Uninstaller"
+  ;Create start-menu items
+  CreateDirectory "$SMPROGRAMS\${PINGUINO_FU_NAME}\"
+  CreateShortCut  "$SMPROGRAMS\${PINGUINO_FU_NAME}\v${PINGUINO_FU_VERSION}\${PINGUINO_FU_NAME}.lnk" "$INSTDIR\FirmwareUploader.exe" "" "$INSTDIR\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|SHIFT|P "Pinguino FU"
+  CreateShortCut  "$SMPROGRAMS\${PINGUINO_FU_NAME}\v${PINGUINO_FU_VERSION}\Uninstall.lnk" "$INSTDIR\pinguino-uninstall.exe" "" "$INSTDIR\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|ALT|SHIFT|P "Pinguino FU Uninstaller"
 
 FunctionEnd
 
@@ -523,8 +523,8 @@ FunctionEnd
 ;=======================================================================
 
 Function InstallComplete
-    
-    Done:
+  
+  Done:
     DetailPrint "Installation complete."
 
 FunctionEnd
@@ -535,7 +535,7 @@ FunctionEnd
 
 Function LaunchPinguinoFirmwareUploader
 
-    ;Start:
-    ExecShell "" "$INSTDIR\FirmwareUploader.exe"
+  ;Start:
+  ExecShell "" "$INSTDIR\FirmwareUploader.exe"
 
 FunctionEnd
