@@ -19,9 +19,6 @@ ShowInstDetails show                    ;Show installation logs
 ;Includes
 ;=======================================================================
 
-!addplugindir /x86-ansi "plugins/"
-
-;!include "Sections.nsh"
 !include "WinMessages.nsh"
 !include "MUI2.nsh"
 !include "FileFunc.nsh"
@@ -70,20 +67,7 @@ ShowInstDetails show                    ;Show installation logs
 
 !define URL_SFBASE                      "https://sourceforge.net/projects/pinguinoide/files"
 !define URL_SFOS                        "${URL_SFBASE}/windows"
-!define URL_MCHP                        "http://www.microchip.com"
 !define URL_LIBUSB                      "https://sourceforge.net/projects/libusb-win32/files/libusb-win32-releases"
-!define URL_PYTHON                      "https://www.python.org/ftp/python"
-!define URL_PYTHONPIP                   "https://bootstrap.pypa.io"
-!define PyPIP                           "get-pip.py"
-
-!define pinguino-ide                    "pinguino-ide.zip"
-!define pinguino-libraries              "pinguino-libraries.zip"
-!define pinguino-xc8                    "xc8-v${XC8_VERSION}-full-install-windows-installer.exe"
-!define pinguino-xc8-latest             "mplabxc8windows"
-!define pinguino-sdcc32                 "pinguino-windows32-sdcc-mpic16.zip"
-!define pinguino-sdcc64                 "pinguino-windows64-sdcc-mpic16.zip"
-!define pinguino-gcc32                  "pinguino-windows32-gcc-mips-elf.zip"
-!define pinguino-gcc64                  "pinguino-windows64-gcc-mips-elf.zip"
 
 ;=======================================================================
 ;General Settings
@@ -111,18 +95,14 @@ VIProductVersion ${INSTALLER_VERSION}
 !insertmacro MUI_PAGE_WELCOME           ; Displays a welcome message
 !insertmacro MUI_PAGE_LICENSE           "LICENSE"
 !insertmacro MUI_PAGE_LICENSE           "DISCLAIMER"
-;Page Custom  PAGE_RELEASE PAGE_RELEASE_LEAVE    ; Which Release ?
-;!insertmacro MUI_PAGE_DIRECTORY         ; Install path
-;Page Custom  PAGE_COMPILER PAGE_COMPILER_LEAVE  ; Which Compilers ?
+!insertmacro MUI_PAGE_DIRECTORY         ; Install path
 !insertmacro MUI_PAGE_INSTFILES         ; Install Pinguino
 !insertmacro MUI_PAGE_FINISH            ; End of the installation 
 
 ;Uninstaller : *** TODO UNPAGE RELEASE & COMPILERS ***
 !insertmacro MUI_UNPAGE_WELCOME
 !insertmacro MUI_UNPAGE_CONFIRM
-;UninstPage Custom  un.PAGE_RELEASE un.PAGE_RELEASE_LEAVE
 !insertmacro MUI_UNPAGE_INSTFILES
-;UninstPage Custom  un.PAGE_COMPILER un.PAGE_COMPILER_LEAVE
 !insertmacro MUI_UNPAGE_FINISH
 
 ;=======================================================================
@@ -188,34 +168,6 @@ LangString msg_uptodate ${LANG_ITALIAN} "Your copy is up to date."
 LangString msg_uptodate ${LANG_FRENCH} "Votre installation est à jour."
 
 ;=======================================================================
-;Questions
-;=======================================================================
-
-LangString Q_install_release ${LANG_ENGLISH} "Which release of Pinguino do you want to install?"
-LangString Q_install_release ${LANG_SPANISH} "Deseas instalar el testing o stable Pinguino IDE?"
-LangString Q_install_release ${LANG_PORTUGUESEBR} "Você deseja instalar o testing o stable PINGUINO IDE?"
-LangString Q_install_release ${LANG_ITALIAN} "Vuoi installare il testing o stable Pinguino?"
-LangString Q_install_release ${LANG_FRENCH} "Quelle version de Pinguino voulez-vous installer ?"
-
-LangString Q_install_pinguino ${LANG_ENGLISH} "Do you want to install the new version of Pinguino ?"
-LangString Q_install_pinguino ${LANG_SPANISH} "Do you want to install the new version of Pinguino ?"
-LangString Q_install_pinguino ${LANG_PORTUGUESEBR} "Do you want to install the new version of Pinguino ?"
-LangString Q_install_pinguino ${LANG_ITALIAN} "Do you want to install the new version of Pinguino ?"
-LangString Q_install_pinguino ${LANG_FRENCH} "Voulez-vous installer la nouvelle version de Pinguino ?"
-
-LangString Q_install_drivers ${LANG_ENGLISH} "Do you want to install the Pinguino device drivers ?"
-LangString Q_install_drivers ${LANG_SPANISH} "Deseas instalar los drivers para la placa Pinguino ahora?"
-LangString Q_install_drivers ${LANG_PORTUGUESEBR} "Você deseja instalar os Drivers para a placa do Pinguino Agora?"
-LangString Q_install_drivers ${LANG_ITALIAN} "Vuoi installare ora i driver per la scheda Pinguino?"
-LangString Q_install_drivers ${LANG_FRENCH} "Voulez-vous installer les pilotes USB pour les cartes Pinguino ?"
-
-LangString Q_install_compilers ${LANG_ENGLISH} "Do you want to install compilers?"
-LangString Q_install_compilers ${LANG_SPANISH} "Do you want to install compilers?"
-LangString Q_install_compilers ${LANG_PORTUGUESEBR} "Do you want to install compilers?"
-LangString Q_install_compilers ${LANG_ITALIAN} "Do you want to install compilers?"
-LangString Q_install_compilers ${LANG_FRENCH} "Voulez-vous installer des compilateurs ?"
-
-;=======================================================================
 ;Errors
 ;=======================================================================
 
@@ -259,31 +211,9 @@ LangString E_failed ${LANG_FRENCH} "a échoué. Erreur:"
 ;Variables
 ;=======================================================================
 
-;Var /GLOBAL os_platform                ; 32- or 64-bit OS
-;Var /GLOBAL os_version                 ; Windows XP, Vista, 7, 8 or 10
-Var /GLOBAL PINGUINO_FU_RELEASE            ; stable or testing
-Var /GLOBAL PINGUINO_FU_VERSION            ; 11 or 12
-Var /GLOBAL pinguino_actual_version
-Var /GLOBAL pinguino_last_version
 Var /GLOBAL SourceForge                 ; Path to SourceForge repository
-Var /GLOBAL UserPath                    ; Path to the Pinguino user data
-Var /GLOBAL XC8_VERSION                 ; 1.40
-Var /GLOBAL XC8_PATH                    ; Path to the XC8 compiler
-Var /GLOBAL Python27Path                ; Path to Python 2.7
 Var /GLOBAL url                         ; Used by Download Macro
 Var /GLOBAL program                     ; Used by Download Macro
-;Var hwnd
-
-;=======================================================================
-;Delete a file
-;=======================================================================
-
-;!macro Remove file
-;
-;    Delete "$EXEDIR\$file"
-;    DetailPrint "$file $(msg_deleted)"
-;
-;!macroend
 
 Function .onInit
 
@@ -323,14 +253,11 @@ Section "Uninstall"
     ;Always delete uninstaller first
     Delete "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-uninstaller.exe"
  
-    ;Delete the install directory (but not the compilers)
+    ;Delete the install directory
     RMDir /r /REBOOTOK "$INSTDIR\v$PINGUINO_FU_VERSION\"
 
-    ;Delete the user directory
-    RMDir /r /REBOOTOK "$DOCUMENTS\${PINGUINO_FU_NAME}\v$PINGUINO_FU_VERSION\"
-
     ;Delete Desktop Icon
-    Delete "$DESKTOP\pinguino-ide.lnk"
+    Delete "$DESKTOP\pinguino-fu.lnk"
     Delete "$DESKTOP\v$PINGUINO_FU_VERSION\${PINGUINO_FU_NAME}.lnk"
     
     ;Delete Program Menu
@@ -368,132 +295,8 @@ Section "Install"
     ;Install uploader program
 
     ;End of installation
-    ;Call PublishInfo
-
 
 SectionEnd
-
-;=======================================================================
-;Create a custom page to choose Pinguino release
-;=======================================================================
-
-Var RELEASE_STABLE
-Var RELEASE_TESTING
-Var RELEASE_STATE
-
-Function PAGE_RELEASE
-
-    nsDialogs::Create 1018
-    Pop $0
-    ${If} $0 == error
-        Abort
-    ${endif}
-    
-    !insertmacro MUI_HEADER_TEXT "$(Q_install_release)" ""
-    
-    ${NSD_CreateRadioButton} 250 75 100% 10u "Stable (v${PINGUINO_FU_STABLE})"
-    Pop $RELEASE_STABLE
-    
-    ${NSD_CreateRadioButton} 250 125 100% 10u "Testing (v${PINGUINO_FU_TESTING})"
-    Pop $RELEASE_TESTING
-
-    ${If} $RELEASE_STATE == 1
-        ${NSD_SetState} $RELEASE_TESTING  ${BM_SETCHECK}
-    ${Else}
-        ${NSD_SetState} $RELEASE_STABLE  ${BM_SETCHECK}
-    ${endif}
-
-    ${NSD_CreateBitmap} 0 0 100% 50% ""
-    Pop $0
-    ${NSD_SetImage} $0 "$EXEDIR\${PINGUINO_FU_BMP}" $1
-    nsDialogs::Show
-    ${NSD_FreeImage} $1
-
-FunctionEnd
-
-Function PAGE_RELEASE_LEAVE
-
-    ${NSD_GetState} $RELEASE_STABLE  $R0
-    ${NSD_GetState} $RELEASE_TESTING $R1
-
-    ${If} $R0 == 1
-
-        StrCpy $PINGUINO_FU_VERSION ${PINGUINO_FU_STABLE}
-        StrCpy $PINGUINO_FU_RELEASE "stable"
-        StrCpy $RELEASE_STATE 1
-
-        StrCpy $INSTDIR "C:\${PINGUINO_FU_NAME}"
-        ;DetailPrint "Installation path : $INSTDIR"
-
-    ${Else}
-
-        StrCpy $PINGUINO_FU_VERSION ${PINGUINO_FU_TESTING}
-        StrCpy $PINGUINO_FU_RELEASE "testing"
-        StrCpy $RELEASE_STATE 1
-
-        ;Detect the architecture of host system (32 or 64 bits)
-        ;and set Pinguino default path
-        ${If} ${RunningX64}
-            ;SetRegView 64
-            StrCpy $INSTDIR "$PROGRAMFILES64\${PINGUINO_FU_NAME}"
-        ${Else}
-            ;SetRegView 32
-            StrCpy $INSTDIR "$PROGRAMFILES32\${PINGUINO_FU_NAME}"
-        ${endif}
-        ;DetailPrint "Installation path : $INSTDIR"
-
-    ${endif}
-
-    StrCpy $UserPath "$DOCUMENTS\${PINGUINO_FU_NAME}\v$PINGUINO_FU_VERSION"
-    StrCpy $SourceForge "${URL_SFOS}/$PINGUINO_FU_RELEASE"
-
-FunctionEnd
-
-;=======================================================================
-;Create a custom page to choose Compilers
-;=======================================================================
-
-Var COMPILERS_SDCC
-Var COMPILERS_XC8
-Var COMPILERS_GCC
- 
-Function PAGE_COMPILER
-
-    nsDialogs::Create 1018
-    Pop $0
-    ${If} $0 == error
-        Abort
-    ${endif}
-    
-    !insertmacro MUI_HEADER_TEXT "$(Q_install_compilers)" ""
-    
-    ${NSD_CreateCheckBox} 250 50 100% 10u  "SDCC for PIC18F"
-    Pop $COMPILERS_SDCC
-    
-    ;${If} $PINGUINO_FU_VERSION != "11"
-    StrCmp $PINGUINO_FU_VERSION "11" +3
-    ${NSD_CreateCheckBox} 250 100 100% 10u "XC8 for PIC16F and PIC18F"
-    Pop $COMPILERS_XC8
-    
-    ${NSD_CreateCheckBox} 250 150 100% 10u "GCC for PIC32MX"
-    Pop $COMPILERS_GCC
-
-    ${NSD_CreateBitmap} 0 0 100% 50% ""
-    Pop $0
-    ${NSD_SetImage} $0 "$EXEDIR\${PINGUINO_FU_BMP}" $1
-    nsDialogs::Show
-    ${NSD_FreeImage} $1
-
-FunctionEnd
-
-Function PAGE_COMPILER_LEAVE
-
-    ${NSD_GetState} $COMPILERS_SDCC $R0
-    StrCmp $PINGUINO_FU_VERSION "11" +2
-    ${NSD_GetState} $COMPILERS_XC8  $R1
-    ${NSD_GetState} $COMPILERS_GCC  $R2
-
-FunctionEnd
 
 ;=======================================================================
 ;Removes leading & trailing whitespace from a string
@@ -583,7 +386,7 @@ FunctionEnd
 
 
 ;=======================================================================
-; pinguino-ide installation routine.
+; pinguino-fu installation routine.
 ;=======================================================================
 
 Function InstallPinguinoFU
@@ -609,10 +412,6 @@ FunctionEnd
 
 Function InstallLibUSB
 
-    ;Check if LibUSB is installed
-    ;ReadRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\LibUSB-Win32_is1" "Inno Setup: App Path"
-    ;DetailPrint "LibUSB path is $0"
-    ;IfErrors 0 Done
 
     ;Download LibUSB
     ${Download} "${URL_LIBUSB}/${LIBUSBWIN32_VERSION}" "libusb-win32-bin-${LIBUSBWIN32_VERSION}.zip"
@@ -632,8 +431,6 @@ Function InstallLibUSB
 
     Done:
     DetailPrint "LibUSB $(msg_installed)"
-    ;ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\LibUSB-Win32_is1\InstallLocation" ""
-    ;StrCpy $LibUSBPath $0
 
 FunctionEnd
 
@@ -653,12 +450,10 @@ Function PublishInfo
     WriteRegStr HKLM "${REG_UNINSTALL}" "URLInfoAbout" "${FILE_URL}"
     WriteRegStr HKLM "${REG_UNINSTALL}" "Publisher" "${FILE_OWNER}"
     ;Info
-    WriteRegStr HKLM "${REG_PINGUINO}" "PinguinoName" "${PINGUINO_FU_NAME}"
-    WriteRegStr HKLM "${REG_PINGUINO}" "PinguinoVersion" "$PINGUINO_FU_VERSION"
-    WriteRegStr HKLM "${REG_PINGUINO}" "PinguinoRelease" "$PINGUINO_FU_RELEASE"
-    WriteRegStr HKLM "${REG_PINGUINO}" "PinguinoPath" "$INSTDIR"
-    WriteRegStr HKLM "${REG_PINGUINO}" "XC8Version" "$XC8_VERSION"
-    WriteRegStr HKLM "${REG_PINGUINO}" "XC8Path" "$XC8_PATH"
+    WriteRegStr HKLM "${REG_PINGUINO}" "PinguinoFUName" "${PINGUINO_FU_NAME}"
+    WriteRegStr HKLM "${REG_PINGUINO}" "PinguinoFUVersion" "$PINGUINO_FU_VERSION"
+    WriteRegStr HKLM "${REG_PINGUINO}" "PinguinoFURelease" "$PINGUINO_FU_RELEASE"
+    WriteRegStr HKLM "${REG_PINGUINO}" "PinguinoFUPath" "$INSTDIR"
 
 FunctionEnd
 
@@ -674,14 +469,12 @@ Function MakeShortcuts
     File "/oname=$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" ${PINGUINO_FU_ICON}
 
     ;Create desktop shortcut
-    ;CreateShortCut  "$DESKTOP\${PINGUINO_FU_NAME}.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|ALT|P "Pinguino IDE"
-    ;CreateShortCut  "$DESKTOP\${PINGUINO_FU_NAME}-v$PINGUINO_FU_VERSION.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|ALT|P "Pinguino IDE"
-    CreateShortCut  "$DESKTOP\${PINGUINO_FU_NAME}-v$PINGUINO_FU_VERSION.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 0 SW_SHOWNORMAL CONTROL|SHIFT|P "Pinguino IDE"
+    CreateShortCut  "$DESKTOP\${PINGUINO_FU_NAME}-v$PINGUINO_FU_VERSION.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 0 SW_SHOWNORMAL CONTROL|SHIFT|P "Pinguino FU"
 
     ;Create start-menu items
     CreateDirectory "$SMPROGRAMS\${PINGUINO_FU_NAME}\v$PINGUINO_FU_VERSION\"
-    CreateShortCut  "$SMPROGRAMS\${PINGUINO_FU_NAME}\v$PINGUINO_FU_VERSION\${PINGUINO_FU_NAME}.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|SHIFT|P "Pinguino IDE"
-    CreateShortCut  "$SMPROGRAMS\${PINGUINO_FU_NAME}\v$PINGUINO_FU_VERSION\Uninstall.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-uninstall.exe" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|ALT|SHIFT|P "Pinguino Uninstaller"
+    CreateShortCut  "$SMPROGRAMS\${PINGUINO_FU_NAME}\v$PINGUINO_FU_VERSION\${PINGUINO_FU_NAME}.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|SHIFT|P "Pinguino FU"
+    CreateShortCut  "$SMPROGRAMS\${PINGUINO_FU_NAME}\v$PINGUINO_FU_VERSION\Uninstall.lnk" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino-uninstall.exe" "" "$INSTDIR\v$PINGUINO_FU_VERSION\pinguino.ico" 2 SW_SHOWNORMAL CONTROL|ALT|SHIFT|P "Pinguino FU Uninstaller"
 
 FunctionEnd
 
@@ -691,36 +484,15 @@ FunctionEnd
 
 Function InstallComplete
 
-    ;Update pinguino.windows.conf for all windows version
-    ;Note that $UserPath could be replaced with %USERNAME% (Dave Maners, 2017-08-13)
-    DetailPrint "Updating pinguino.windows.conf ..."
-    FileOpen  $0 $INSTDIR\v$PINGUINO_FU_VERSION\pinguino\qtgui\config\pinguino.windows.conf w
-    FileWrite $0 "[Paths]$\r$\n"
-    FileWrite $0 "sdcc_bin = $INSTDIR\p8\bin\$\r$\n"
-    FileWrite $0 "gcc_bin  = $INSTDIR\p32\bin\$\r$\n"
-    FileWrite $0 "xc8_bin  = $XC8_PATH\bin$\r$\n"
-    FileWrite $0 "pinguino_8_libs  = $INSTDIR\v$PINGUINO_FU_VERSION\p8\$\r$\n"
-    FileWrite $0 "pinguino_32_libs = $INSTDIR\v$PINGUINO_FU_VERSION\p32\$\r$\n"
-    FileWrite $0 "install_path = $INSTDIR\v$PINGUINO_FU_VERSION\$\r$\n"
-    FileWrite $0 "user_path = $UserPath$\r$\n"
-    FileWrite $0 "user_libs = $UserPath\pinguinolibs$\r$\n"
-    FileClose $0
-    
-    ;IfFileExists "$Python27Path\Lib\site-packages\pinguino\qtgui\config\pinguino.windows.conf" 0 +2
-    ;Delete "$Python27Path\Lib\site-packages\pinguino\qtgui\config\pinguino.windows.conf"
-    ;Rename "$INSTDIR\pinguino.windows.conf" "$Python27Path\Lib\site-packages\pinguino\qtgui\config\pinguino.windows.conf"
-
     ${If} $PINGUINO_FU_VERSION == ${PINGUINO_FU_TESTING}
 
         ;Update pinguino-fu.bat
         DetailPrint "Updating pinguino-fu.bat ..."
-        ;Delete  $INSTDIR\pinguino-fu.bat
         FileOpen  $0 $INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat w
         FileWrite $0 "@ECHO OFF"
         FileWrite $0 "$\r$\n"
         FileWrite $0 "CD $INSTDIR\v$PINGUINO_FU_VERSION"
         FileWrite $0 "$\r$\n"
-        ;FileWrite $0 "$Python27Path\python $Python27Path\Scripts\pinguinoide.pyw"
         FileWrite $0 "$Python27Path\python pinguino-ide.py"
         FileWrite $0 "$\r$\n"
         FileClose $0
@@ -734,7 +506,6 @@ Function InstallComplete
     
         ;Update pinguino-fu.bat
         DetailPrint "Updating pinguino-fu.bat ..."
-        ;Delete  $INSTDIR\pinguino-fu.bat
         FileOpen  $0 $INSTDIR\v$PINGUINO_FU_VERSION\pinguino-fu.bat w
         FileWrite $0 "@ECHO OFF"
         FileWrite $0 "$\r$\n"
@@ -743,11 +514,6 @@ Function InstallComplete
         FileWrite $0 "$Python27Path\python pinguino.py"
         FileWrite $0 "$\r$\n"
         FileClose $0
-
-        ;Execute pinguino-ide post_install routine...
-        ExecWait '"$Python27Path\python" "$INSTDIR\v$PINGUINO_FU_VERSION\post_install.py"' $0
-        StrCmp $0 "0" Done
-        DetailPrint "Post-installation $(E_failed) $0!"
 
     ${endif}
     
