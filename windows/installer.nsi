@@ -290,7 +290,7 @@ Section "Install"
 
   ;Install device drivers ?
   MessageBox MB_YESNO|MB_ICONQUESTION "$(Q_install_drivers)" IDNO NoDrivers
-  MessageBox MB_OK|MB_ICONINFORMATION "Note Vendor:Product ID's$\r$\n$\r$\n 8-bit Pinguino : 04D8:FEAA$\r$\n32-bit Pinguino : 04D8:003C" IDNO NoDrivers
+  MessageBox MB_OK|MB_ICONINFORMATION "Either Plug in the device now so it can be detected, or write down the following:$\r$\n$\r$\nNote Vendor:Product ID's$\r$\n$\r$\n 8-bit Pinguino : 04D8:FEAA$\r$\n32-bit Pinguino : 04D8:003C" IDNO NoDrivers
   Call InstallLibUSB
   NoDrivers:
 
