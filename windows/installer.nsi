@@ -328,18 +328,17 @@ Function PAGE_RELEASE
     Abort
   ${endif}
   
-  !insertmacro MUI_HEADER_TEXT "First Arg" "Second Arg"
-  
-  ${NSD_CreateBitmap} 0 0 100% 50% ""
-
-  "This installer will first download and install the Firmware Uploader."
-
-  "Then it will offer to download the usb driver package, and create a driver for the device."
-
-  "If this is the first install, you should plug the device in, and then create a driver for it.  It will show up in the list as 'P8', 'Microchip' or 'Pinguino'"
-
-  
+  !insertmacro MUI_HEADER_TEXT "Welcome" "to the Pinguino Firmware Uploader"
+    ${NSD_CreateLabel} 200 10u 50% 20u "This installer will first download and install the Firmware Uploader."
+    Pop $0
+    
+    ${NSD_CreateLabel} 200 30u 50% 30u "Then it will offer to download the usb driver package, and create a driver for the device."
+    Pop $0
+    ${NSD_CreateLabel} 200 60u 50% 50u "If this is the first install, you should plug the device in, and then create a driver for it.  It will show up in the list as 'P8', 'Microchip' or 'Pinguino'"
+    Pop $0
+  ${NSD_CreateBitmap} 0 0 100% 50% "This is A Very Long Line Of TExt to See What Happens"
   Pop $0
+
   ${NSD_SetImage} $0 "$EXEDIR\${PINGUINO_FU_BMP}" $1
   nsDialogs::Show
   ${NSD_FreeImage} $1
