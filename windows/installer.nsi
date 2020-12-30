@@ -242,7 +242,7 @@ Function .onInit
   ${EndIf}
 
   ;Embed files
-  SetOutPath $EXEDIR
+  SetOutPath $PLUGINSDIR
   File ${CURL}
   File ${PINGUINO_FU_BMP}
 
@@ -422,7 +422,7 @@ Function Download
   DetailPrint "$(msg_downloading) $program ..."
   Start:
     ClearErrors
-    nsExec::ExecToLog '"$EXEDIR\curl.exe" --progress-bar -Lk $url/$program -o "$EXEDIR\$program"'
+    nsExec::ExecToLog '"$PLUGINSDIR\curl.exe" --progress-bar -Lk $url/$program -o "$PLUGINSDIR\$program"'
     Pop $0
     StrCmp $0 "0" Done
     ;Abort "$program $(E_downloading) $0!"
@@ -455,7 +455,7 @@ Function InstallPinguinoFU
 
   ;Install Pinguino IDE
   ClearErrors
-  nsisunz::UnzipToLog "$EXEDIR\${pinguino-fu}" "$INSTDIR"
+  nsisunz::UnzipToLog "$PLUGINSDIR\${pinguino-fu}" "$INSTDIR"
   IfErrors 0 +2
   Abort "$(E_extracting) ${pinguino-fu}"
 
@@ -477,12 +477,12 @@ Function InstallLibUSB
   
   ;Unzip LibUSB
   ClearErrors
-  nsisunz::UnzipToLog "$EXEDIR\$program" "$EXEDIR"
+  nsisunz::UnzipToLog "$PLUGINSDIR\$program" "$PLUGINSDIR"
   IfErrors 0 +2
   Abort "$(E_extracting) $program"
 
   ;Run LibUSB
-  nsExec::Exec '"$EXEDIR\libusb-win32-bin-${LIBUSBWIN32_VERSION}\bin\inf-wizard.exe"'
+  nsExec::Exec '"$PLUGINSDIR\libusb-win32-bin-${LIBUSBWIN32_VERSION}\bin\inf-wizard.exe"'
   Pop $0
   StrCmp $0 "0" Done
   Abort "LibUSB $(E_installing) $0!"
