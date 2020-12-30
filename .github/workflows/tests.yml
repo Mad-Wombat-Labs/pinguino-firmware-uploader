@@ -52,3 +52,32 @@ jobs:
       - name: Run pyinstaller
         run: |
           pyinstaller -y FirmwareUploader.spec
+
+      - name: Download Marquee
+        uses: carlosperate/download-file-action@v1.0.3
+        with:
+          file-url: https://nsis.sourceforge.io/mediawiki/images/1/13/Marquee.zip
+          file-name: marquee.zip
+          location: ${{ github.workspace }}
+          
+      - name: Download NSISunzip
+        uses: carlosperate/download-file-action@v1.0.3
+        with:
+          file-url: https://nsis.sourceforge.io/mediawiki/images/5/5a/NSISunzU.zip
+          file-name: nsisunzU.zip
+          location: ${{ github.workspace }}
+          
+      - name: Make plugins dir
+        shell: bash
+        run: |
+          mkdir -p ${{ github.workspace }}/nsis-plugins/x86-ansi
+          mkdir ${{ github.workspace }}/nsis-plugins/x86-unicode
+          7z x -o "${{ github.workspace }}/nsis-plugins/x86-ansi/" "${{ github.workspace }}/marquee.zip"
+          7z x -o "${{ github.workspace }}" "${{ github.workspace }}/marquee.zip"
+          mv "${{ github.workspace }}/NSISunzU/Plugin unicode/*" "${{ github.workspace }}/nsis-plugins/x86-unicode"
+
+      - name: Create nsis installer
+        uses: joncloud/makensis-action@v3.3
+        with:
+          additional-plugin-paths: ${{ github.workspace }}/nsis-plugins
+          script-file: ${{ github.workspace }}/windows/installer.nsi
