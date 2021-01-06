@@ -78,7 +78,7 @@ jobs:
           mv "${{ github.workspace }}/NSISunzU/Plugin unicode/nsisunz.dll" "${{ github.workspace }}/nsis-plugins/x86-unicode"
 
       - name: Create nsis installer
-        uses: joncloud/makensis-action@v3.3
+        uses: 2e0byo/makensis-action@v3.5
         with:
           additional-plugin-paths: ${{ github.workspace }}/nsis-plugins
           script-file: ${{ github.workspace }}/windows/installer.nsi
