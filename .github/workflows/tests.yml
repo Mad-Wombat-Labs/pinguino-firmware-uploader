@@ -88,8 +88,13 @@ jobs:
         shell: bash
         run: ls -R .
 
+      - name : get installer version
+        shell: bash
+        run: |
+          echo "INSTALLER_VERSION=$(grep 'INSTALLER_VERSION' | head -n 1 | awk '{print $3}')" >> $GITHUB_ENV
+
       - name: Upload artifact
         uses: actions/upload-artifact@v1.0.0
         with:
-          name: installer.exe
-          path: installer.exe
+          name: windows/Pinguino-Firmware-Uploader-Installer${{env.INSTALLER_VERSION}}.exe
+          path: windows/Pinguino-Firmware-Uploader-Installer${{env.INSTALLER_VERSION}}.exe
