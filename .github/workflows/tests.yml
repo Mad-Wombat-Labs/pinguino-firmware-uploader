@@ -73,7 +73,7 @@ jobs:
           mkdir -p ${{ github.workspace }}/nsis-plugins/x86-ansi
           mkdir ${{ github.workspace }}/nsis-plugins/x86-unicode
           7z x -o"${{ github.workspace }}" "${{ github.workspace }}/marquee.zip"
-          mv "${{ github.workspace }}/Marquee.dll" "${{ github.workspace}}/nsis-plugins/x85-ansi/"
+          mv "${{ github.workspace }}/Marquee.dll" "${{ github.workspace}}/nsis-plugins/x86-ansi/"
           7z x -o"${{ github.workspace }}" "${{ github.workspace }}/nsisunzU.zip"
           ls -R "${{ github.workspace }}"
           mv "${{ github.workspace }}/NSISunzU/Plugin unicode/nsisunz.dll" "${{ github.workspace }}/nsis-plugins/x86-unicode"
