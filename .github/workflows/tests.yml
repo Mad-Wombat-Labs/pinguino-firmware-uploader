@@ -91,7 +91,8 @@ jobs:
       - name : get installer version
         shell: bash
         run: |
-          echo "INSTALLER_VERSION=$(grep 'INSTALLER_VERSION' | head -n 1 | awk '{print $3}')" >> $GITHUB_ENV
+          grep 'INSTALLER_VERSION' windows/installer.nsi | head -n 1 | awk '{print $3}')
+          echo "INSTALLER_VERSION=$(grep 'INSTALLER_VERSION' windows/installer.nsi | head -n 1 | awk '{print $3}')" >> $GITHUB_ENV
 
       - name: Upload artifact
         uses: actions/upload-artifact@v1.0.0
