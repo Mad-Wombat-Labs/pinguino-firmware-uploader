@@ -76,6 +76,7 @@ jobs:
           ls -R "."
           mv "Marquee.dll" nsis-plugins/x86-ansi/
           7z x -o"." "nsisunzU.zip"
+          cp "NSISunzU/Plugin unicode/nsisunz.dll" "nsis-plugins/x86-ansi/"
           mv "NSISunzU/Plugin unicode/nsisunz.dll" "nsis-plugins/x86-unicode/"
 
       - name: Create nsis installer
