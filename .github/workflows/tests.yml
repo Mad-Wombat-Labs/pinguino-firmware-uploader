@@ -84,10 +84,6 @@ jobs:
           additional-plugin-paths: ${{ github.workspace }}/nsis-plugins
           script-file: ${{ github.workspace }}/windows/installer.nsi
 
-      - name : find installer
-        shell: bash
-        run: ls -R .
-
       - name : get installer version
         shell: bash
         run: |

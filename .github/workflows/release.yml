@@ -77,18 +77,25 @@ jobs:
       - name: Make plugins dir
         shell: bash
         run: |
-          mkdir -p ${{ github.workspace }}/nsis-plugins/x86-ansi
-          mkdir ${{ github.workspace }}/nsis-plugins/x86-unicode
-          7z x -o "${{ github.workspace }}/nsis-plugins/x86-ansi/" "${{ github.workspace }}/marquee.zip"
-          7z x -o "${{ github.workspace }}" "${{ github.workspace }}/marquee.zip"
-          mv "${{ github.workspace }}/NSISunzU/Plugin unicode/*" "${{ github.workspace }}/nsis-plugins/x86-unicode"
+          mkdir -p nsis-plugins/x86-ansi
+          mkdir nsis-plugins/x86-unicode
+          7z x -o"." "marquee.zip"
+          mv "Marquee.dll" nsis-plugins/x86-ansi/
+          7z x -o"." "nsisunzU.zip"
+          mv "NSISunzU/Plugin unicode/nsisunz.dll" "nsis-plugins/x86-ansi/"
 
       - name: Create nsis installer
-        uses: joncloud/makensis-action@v3.3
+        uses: joncloud/makensis-action@v3.4
         with:
           additional-plugin-paths: ${{ github.workspace }}/nsis-plugins
           script-file: ${{ github.workspace }}/windows/installer.nsi
-        
+
+      - name : get installer version
+        shell: bash
+        run: |
+          grep 'INSTALLER_VERSION' windows/installer.nsi | head -n 1 | awk '{print $3}' | tr -d "'"
+          echo "INSTALLER_VERSION=$(grep 'INSTALLER_VERSION' windows/installer.nsi | head -n 1 | awk '{print $3}' | tr -d \')" >> $GITHUB_ENV
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -109,3 +116,6 @@ jobs:
           asset_path: ./FirmwareUploader-${{ env.RELEASE_VERSION }}.zip
           asset_name: FirmwareUploader-${{ env.RELEASE_VERSION }}.zip
           asset_content_type: application/zip
+          asset_path: windows/Pinguino-Firmware-Uploader-Installer-v${{env.INSTALLER_VERSION}}.exe
+          asset_name: Pinguino-Firmware-Uploader-Installer-v${{env.INSTALLER_VERSION}}.exe
+          asset_content_type: application/exe
