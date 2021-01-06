@@ -72,7 +72,8 @@ jobs:
         run: |
           mkdir -p ${{ github.workspace }}/nsis-plugins/x86-ansi
           mkdir ${{ github.workspace }}/nsis-plugins/x86-unicode
-          7z x -o"${{ github.workspace }}/nsis-plugins/x86-ansi/" "${{ github.workspace }}/marquee.zip"
+          7z x -o"${{ github.workspace }}" "${{ github.workspace }}/marquee.zip"
+          mv "${{ github.workspace }}/Marquee.dll" "${{ github.workspace}}/nsis-plugins/x85-ansi/"
           7z x -o"${{ github.workspace }}" "${{ github.workspace }}/nsisunzU.zip"
           ls -R "${{ github.workspace }}"
           mv "${{ github.workspace }}/NSISunzU/Plugin unicode/nsisunz.dll" "${{ github.workspace }}/nsis-plugins/x86-unicode"
@@ -82,3 +83,9 @@ jobs:
         with:
           additional-plugin-paths: ${{ github.workspace }}/nsis-plugins
           script-file: ${{ github.workspace }}/windows/installer.nsi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          name: installer.exe
+          path: ${{github.workspace }}/windows/installer.exe
