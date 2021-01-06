@@ -96,5 +96,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v1.0.0
         with:
-          name: windows/Pinguino-Firmware-Uploader-Installer${{env.INSTALLER_VERSION}}.exe
+          name: Pinguino-Firmware-Uploader-Installer${{env.INSTALLER_VERSION}}.exe
           path: windows/Pinguino-Firmware-Uploader-Installer${{env.INSTALLER_VERSION}}.exe
