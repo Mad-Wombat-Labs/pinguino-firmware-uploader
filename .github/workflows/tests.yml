@@ -91,11 +91,11 @@ jobs:
       - name : get installer version
         shell: bash
         run: |
-          grep 'INSTALLER_VERSION' windows/installer.nsi | head -n 1 | awk '{print $3}'
-          echo "INSTALLER_VERSION=$(grep 'INSTALLER_VERSION' windows/installer.nsi | head -n 1 | awk '{print $3}')" >> $GITHUB_ENV
+          grep 'INSTALLER_VERSION' windows/installer.nsi | head -n 1 | awk '{print $3}' | tr -d "'"
+          echo "INSTALLER_VERSION=$(grep 'INSTALLER_VERSION' windows/installer.nsi | head -n 1 | awk '{print $3}' | tr -d \"'\")" >> $GITHUB_ENV
 
       - name: Upload artifact
         uses: actions/upload-artifact@v1.0.0
         with:
-          name: Pinguino-Firmware-Uploader-Installer${{env.INSTALLER_VERSION}}.exe
-          path: windows/Pinguino-Firmware-Uploader-Installer${{env.INSTALLER_VERSION}}.exe
+          name: Pinguino-Firmware-Uploader-Installer-v${{env.INSTALLER_VERSION}}.exe
+          path: windows/Pinguino-Firmware-Uploader-Installer-v${{env.INSTALLER_VERSION}}.exe
