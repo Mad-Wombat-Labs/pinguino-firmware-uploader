@@ -70,13 +70,13 @@ jobs:
       - name: Make plugins dir
         shell: bash
         run: |
-          mkdir -p ${{ github.workspace }}/nsis-plugins/x86-ansi
-          mkdir ${{ github.workspace }}/nsis-plugins/x86-unicode
-          7z x -o"${{ github.workspace }}" "${{ github.workspace }}/marquee.zip"
-          ls -R "${{ github.workspace }}"
-          mv "${{ github.workspace }}/Marquee.dll" "${{ github.workspace}}/nsis-plugins/x86-ansi/"
-          7z x -o"${{ github.workspace }}" "${{ github.workspace }}/nsisunzU.zip"
-          mv "${{ github.workspace }}/NSISunzU/Plugin unicode/nsisunz.dll" "${{ github.workspace }}/nsis-plugins/x86-unicode"
+          mkdir -p nsis-plugins/x86-ansi
+          mkdir nsis-plugins/x86-unicode
+          7z x -o"." "marquee.zip"
+          ls -R "."
+          mv "Marquee.dll" nsis-plugins/x86-ansi/
+          7z x -o"." "nsisunzU.zip"
+          mv "NSISunzU/Plugin unicode/nsisunz.dll" "nsis-plugins/x86-unicode/"
 
       - name: Create nsis installer
         uses: joncloud/makensis-action@v3.4
