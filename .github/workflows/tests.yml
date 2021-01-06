@@ -76,8 +76,8 @@ jobs:
           ls -R "."
           mv "Marquee.dll" nsis-plugins/x86-ansi/
           7z x -o"." "nsisunzU.zip"
-          cp "NSISunzU/Plugin unicode/nsisunz.dll" "nsis-plugins/x86-ansi/"
-          mv "NSISunzU/Plugin unicode/nsisunz.dll" "nsis-plugins/x86-unicode/"
+          mv "NSISunzU/Plugin unicode/nsisunz.dll" "nsis-plugins/x86-ansi/"
+          # mv "NSISunzU/Plugin unicode/nsisunz.dll" "nsis-plugins/x86-unicode/"
 
       - name: Create nsis installer
         uses: joncloud/makensis-action@v3.4
@@ -89,4 +89,4 @@ jobs:
         uses: actions/upload-artifact@v1.0.0
         with:
           name: installer.exe
-          path: ${{github.workspace }}/windows/installer.exe
+          path: installer.exe
