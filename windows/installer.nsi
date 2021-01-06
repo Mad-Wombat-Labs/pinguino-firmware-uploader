@@ -33,7 +33,7 @@ ShowInstDetails show                    ;Show installation logs
 
 !define INSTALLER_VERSION               '0.0.1.0'
 !define LIBUSBWIN32_VERSION             '1.2.6.0'
-!define PINGUINO_FU_VERSION             '0.9.1'
+!define PINGUINO_FU_VERSION             '0.9.3'
 
 !define PINGUINO_FU_NAME                'Pinguino-Firmware-Uploader'
 !define PINGUINO_FU_ICON                "pinguino11.ico"
