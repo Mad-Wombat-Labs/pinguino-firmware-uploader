@@ -57,7 +57,7 @@ jobs:
           pyinstaller -y FirmwareUploader.spec
       - name: Zip up distribution
         run: |
-          cd dist/FirmwarUploader
+          cd dist/FirmwareUploader
           7z a ../../FirmwareUploader-${{ env.RELEASE_VERSION }}.zip ./ -r
 
       - name: Download Marquee
