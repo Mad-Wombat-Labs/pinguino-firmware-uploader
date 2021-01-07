@@ -70,19 +70,18 @@ jobs:
       - name: Download NSISunzip
         uses: carlosperate/download-file-action@v1.0.3
         with:
-          file-url: https://nsis.sourceforge.io/mediawiki/images/5/5a/NSISunzU.zip
-          file-name: nsisunzU.zip
+          file-url: https://nsis.sourceforge.io/mediawiki/images/1/1c/Nsisunz.zip
+          file-name: nsisunz.zip
           location: ${{ github.workspace }}
           
       - name: Make plugins dir
         shell: bash
         run: |
           mkdir -p nsis-plugins/x86-ansi
-          mkdir nsis-plugins/x86-unicode
           7z x -o"." "marquee.zip"
           mv "Marquee.dll" nsis-plugins/x86-ansi/
-          7z x -o"." "nsisunzU.zip"
-          mv "NSISunzU/Plugin unicode/nsisunz.dll" "nsis-plugins/x86-ansi/"
+          7z x -o"." "nsisunz.zip"
+          mv "nsisunz/Release/nsisunz.dll" "nsis-plugins/x86-ansi/"
 
       - name: Create nsis installer
         uses: joncloud/makensis-action@v3.4
