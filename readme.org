@@ -29,7 +29,8 @@ upload.
 
 * Installation
 
-Write later.
+See the [[https://github.com/Mad-Wombat-Labs/pinguino-firmware-uploader/wiki][wiki]] for a step-by-step guide with screenshots.
+
 
 * Implementation
 
