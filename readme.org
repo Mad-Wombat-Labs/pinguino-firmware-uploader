@@ -17,7 +17,7 @@ mode.  It is nothing more than a bunch of hacks on top of the uploader
 code used by Pinguino itself at the time, and I have made no attempts
 to translate Pingunio’s rather idiosyncratic Python (passing lists of
 string around to signify status, anyone? and
-~~VERY_LONG_CONSTANT_NAMES~? ;) ) into something more Pythonic.
+~VERY_LONG_CONSTANT_NAMES~? ;) ) into something more Pythonic.
 
 Having shipped a project with an embarassing bug in it to the other
 side of the Atlantic I needed a basic GUI I could send which would run
